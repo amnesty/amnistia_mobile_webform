@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Implements installation schema for aministia form mobile.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function amnistia_form_mobile_schema() {
+  $schema = array();
+
+  $schema['amnistia_form_mobile'] = array(
+    'description' => 'Storage for amnistia form mobile',
+    'fields' => array(
+      'afme_id' => array(
+        'description' => 'Primary key: settings ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'email' => array(
+        'description' => 'eMail for lead has filled the form',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'token' => array(
+        'description' => 'Token for manage this element',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'form_id' => array(
+        'description' => 'Id webform for this element',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'data_serialized' => array(
+        'description' => 'Form data serialized. Used for refill the form.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'Creation date for this element (timestamp)',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'updated' => array(
+        'description' => 'Update date for this element (timestamp)',
+        'type' => 'int',
+      ),
+      'status' => array(
+        'description' => 'Status for this element. 0: incompleted, 1: incompleted and remembered,2: completed',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      // Consider adding additional fields for time created, time updated.
+    ),
+    'primary key' => array('afme_id'),
+  );
+  return $schema;
+}

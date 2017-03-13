@@ -1,0 +1,11 @@
+; $Id: $
+name = amnistia_form_mobile
+description = Provides Amnistia Form Mobile.
+core = 7.x
+package = Amnistia
+version = 7.x-1.0
+
+dependencies[] = entity
+dependencies[] = webform
+dependencies[] = views
+

@@ -1,0 +1,454 @@
+<?php
+
+/**
+ * @file
+ * Implements Amnistia form mobile entity.
+ */
+
+/**
+ * Implements hook_entity_info().
+ */
+function amnistia_form_mobile_entity_info() {
+  $return = array();
+
+  $return['amnistia_form_mobile_entity'] = array(
+    // Define basic information.
+    'label' => t('Mobile form'),
+    'fieldable' => TRUE,
+
+    // Provide information about the database table.
+    'base table' => 'amnistia_form_mobile',
+    'entity keys' => array(
+      'id' => 'afme_id',
+      'label' => 'email',
+    ),
+
+    // Use classes from the Entity API module.
+    'entity class' => 'Entity',
+    'controller class' => 'EntityAPIController',
+
+    // Have Entity API set up an administrative UI.
+    'admin ui' => array(
+      'path' => 'admin/amnistia_form_mobile_entity',
+    ),
+    'module' => 'amnistia_form_mobile',
+    'access callback' => 'amnistia_form_mobile_entity_access',
+
+    // For content-type entities only.
+    'uri callback' => 'amnistia_form_mobile_entity_uri',
+  );
+  return $return;
+}
+
+/**
+ * For content-type entities, return the URI for an entity.
+ */
+function amnistia_form_mobile_entity_uri($entity) {
+  return array(
+    'path' => 'amnistia_form_mobile_entity/' . $entity->afme_id,
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function amnistia_form_mobile_menu() {
+  $items = array();
+
+  // Register for the URL that amnistia_form_mobile_entity_uri() returns.
+  // The wildcard %entity_object in the URL is handled by the Entity
+  // API function entity_object_load().
+  $items['amnistia_form_mobile_entity/%entity_object'] = array(
+    // entity_object_load() needs to know what the entity type is.
+    'load arguments' => array('amnistia_form_mobile_entity'),
+    // This callback function, defined below, gives the page title.
+    'title callback' => 'amnistia_form_mobile_entity_page_title',
+    // Use the Entity API function entity_view() to display the page.
+    'page callback' => 'entity_view',
+    // Pass in the loaded entity object from the URL.
+    'page arguments' => array(1),
+    // This access callback function is defined in Step 5.
+    // Its arguments are the operation being attempted and
+    // the loaded object.
+    'access callback' => 'amnistia_form_mobile_entity_access',
+    'access arguments' => array('view', array(1)),
+  );
+
+  return $items;
+}
+
+/**
+ * Title callback function registered above.
+ */
+function amnistia_form_mobile_entity_page_title($entity) {
+  return $entity->email;
+}
+
+/**
+ * Define the permisions.
+ */
+function amnistia_form_mobile_permission() {
+  return array(
+    'view aminstia_form_mobile_entity' => array(
+      'title' => t('View my entity content'),
+    ),
+    'administer amnistia_form_mobile_entity' => array(
+      'title' => t('Administer my entities'),
+    ),
+  );
+}
+
+/**
+ * Access callback for Entity API.
+ */
+function amnistia_form_mobile_entity_access($op, $entity, $account = NULL) {
+  // $op is 'view', 'update', 'create', etc.
+  // $entity could be NULL (to check access for all entity items)
+  // or it could be a single entity item object.
+  // $account is either NULL or a user object.
+  //
+  // In this simple example, just check permissions for
+  // viewing or administering the entity type generically.
+  if ($op == 'view') {
+    return user_access('view amnistia_form_mobile_entity', $account);
+  }
+  return user_access('administer amnistia_form_mobile_entity', $account);
+}
+
+/**
+ * Form-generating function for the editing form.
+ */
+function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
+  $form['email'] = array(
+    '#title' => t('eMail'),
+    '#type' => 'textfield',
+    '#default_value' => isset($entity->email) ? $entity->email : '',
+  );
+
+  $form['token'] = array(
+    '#title' => t('Token'),
+    '#type' => 'textfield',
+    '#default_value' => isset($entity->token) ? $entity->token : drupal_hash_base64(isset($entity->email) ? $entity->email : ''),
+  );
+
+  $form['form_id'] = array(
+    '#title' => t('Id. for related webform'),
+    '#type' => 'textfield',
+    '#default_value' => isset($entity->form_id) ? $entity->form_id : '',
+  );
+
+  $form['data_serialized'] = array(
+    '#title' => t('Data serialized'),
+    '#type' => 'textfield',
+    '#default_value' => isset($entity->data_serialized) ? $entity->data_serialized : '',
+  );
+
+  $form['status'] = array(
+    '#type' => 'select',
+    '#title' => t('Status'),
+    '#options' => array(
+      0 => t('Incomplete'),
+      1 => t('Remember'),
+      2 => t('Complete'),
+    ),
+    '#default_value' => isset($entity->status) ? $entity->status : 0,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#weight' => 999,
+  );
+
+  field_attach_form('amnistia_form_mobile_entity', $entity, $form, $form_state);
+
+  return $form;
+}
+
+/**
+ * Form submission handler for editing form.
+ */
+function amnistia_form_mobile_entity_form_submit($form, &$form_state) {
+  // Make use of Entity API class.
+  $entity = entity_ui_form_submit_build_entity($form, $form_state);
+
+  if (isset($entity->created)) {
+    $entity->update = strtotime('now');
+  }
+  else {
+    $entity->created = strtotime('now');
+  }
+
+  $entity->save();
+
+  // Redirect to the management page.
+  $form_state['redirect'] = 'admin/amnistia_form_mobile_entity';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+
+  if (isset($form_state['input']['submitted'])) {
+    $structure = array();
+    $allFields = $form_state['webform']['component_tree']['children'];
+    foreach ($allFields as $field) {
+      $structure[$field['form_key']] = $field['value'];
+    }
+
+    $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
+    variable_set('email', $email);
+
+    $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE email = :email AND form_id = :form_id",
+      array(':email' => $email, ':form_id' => $form_id));
+    $num_rows = $result->rowCount();
+
+    $record = $result->fetchAll();
+    foreach ($record as $key => $value) {
+      $data_serialized = $value->data_serialized;
+      $structure = unserialize($data_serialized);
+    }
+
+    foreach ($structure as $key => $value) {
+      if (isset($form_state['input']['submitted'][$key])) {
+        $structure[$key] = $form_state['input']['submitted'][$key];
+      }
+    }
+
+    $serialized = serialize($structure);
+
+    if (($num_rows == 0) && !empty($email)) {
+      $record = db_insert('amnistia_form_mobile')
+        ->fields(array(
+          'email',
+          'token',
+          'form_id',
+          'data_serialized',
+          'created',
+          'updated',
+        ))
+        ->values(array(
+          'email' => $email,
+          'token' => drupal_hash_base64($email),
+          'form_id' => $form_id,
+          'data_serialized' => $serialized,
+          'created' => REQUEST_TIME,
+        )
+      )->execute();
+    }
+    else {
+      $record = db_update('amnistia_form_mobile')
+        ->fields(array(
+          'data_serialized' => $serialized,
+          'updated' => REQUEST_TIME,
+        ))
+        ->condition('email', $email)
+        ->condition('form_id', $form_id)
+        ->execute();
+    }
+  }
+}
+
+
+
+/**
+ * Implements hook_views_api().
+ */
+function amnistia_form_mobile_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'amnistia_form_mobile'),
+  );
+}
+
+/**
+ * Implememts hook_views_default_views()
+ */
+function amnistia_form_mobile_views_default_views() {
+  return amnistia_form_mobile_list_all_forms();
+}
+
+/*
+ * Begin view
+ */
+function amnistia_form_mobile_list_all_forms() {
+  /*
+  * View 'list_all_nodes'
+  */
+  $view = views_new_view();
+  $view->name = 'list_all_forms';
+  $view->description = 'Provide a list of forms, creation dates, owner and status';
+  $view->tag = '';
+  $view->view_php = '';
+  $view->base_table = 'amnistia_form_mobile';
+  $view->is_cacheable = FALSE;
+  $view->api_version = '3.0-alpha1';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Defaults */
+  $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->display->display_options['title'] = 'List All forms';
+  $handler->display->display_optinos['access']['type'] = 'role';
+  $handler->display->display_options['access']['role'] = array('3' => '3',);
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '15';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'email' => 'email',
+    'formId' => 'form_id',
+    'created' => 'created',
+    'updated' => 'updated',
+    'status' => 'status',
+  );
+  $handler->display->display_options['style_options']['default'] = 'created';
+  $handler->display->display_options['style_options']
+    ['info'] = array(
+      'email' => array(
+        'sortable' => 1,
+        'align' => 'views-align-left',
+        'separator' => '',
+      ),
+      'formId' => array(
+        'sortable' => 1,
+        'align' => 'views-align-left',
+        'separator' => '',
+      ),
+      'created' => array(
+        'sortable' => 1,
+        'align' => 'views-align-left',
+        'separator' => '',
+      ),
+      'updated' => array(
+        'sortable' => 1,
+        'align' => 'views-align-left',
+        'separator' => '',
+      ),
+      'status' => array(
+        'sortable' => 1,
+        'align' => 'views-align-left',
+        'separator' => '',
+      ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['order'] = 'desc';
+
+  /* Header: Global: Text área */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['empty'] = TRUE;
+  $handler->display->display_options['header']['area']['content'] = '<h2>Following is a list of all custom webforms.</h2>';
+  $handler->display->display_options['header']['area']['format'] = '3';
+
+  /* Footer: Global: Text área */
+  $handler->display->display_options['footer']['area']['id'] = 'area';
+  $handler->display->display_options['footer']['area']['table'] = 'views';
+  $handler->display->display_options['footer']['area']['field'] = 'area';
+  $handler->display->display_options['footer']['area']['empty'] = TRUE;
+  $handler->display->display_options['footer']['area']['content'] = '<small>This view shows a llist of all custom webforms</small>';
+  $handler->display->display_options['footer']['area']['format'] = '3';
+
+  /* Field: FormMobile: Email */
+  $handler->display->display_options['fields']['email']['id'] = 'email';
+  $handler->display->display_options['fields']['email']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['email']['field'] = 'email';
+  $handler->display->display_options['fields']['email']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['email']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['email']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['email']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['email']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['email']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['email']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['email']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['email']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['email']['link_to_node'] = 0;
+
+  /* Field: FormMobile: FormId */
+  $handler->display->display_options['fields']['formId']['id'] = 'form_id';
+  $handler->display->display_options['fields']['formId']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['formId,']['field'] = 'form_id';
+  $handler->display->display_options['fields']['formId']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['formId']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['formId']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['formId']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['formId']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['formId']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['formId']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['formId']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['formId']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['formId']['link_to_node'] = 0;
+
+  /* Field: FormMobile: Created date */
+  $handler->display->display_options['fields']['created']['id'] = 'created';
+  $handler->display->display_options['fields']['created']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['created']['field'] = 'created';
+  $handler->display->display_options['fields']['created']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['created']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['created']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['created']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['created']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['created']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['created']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['created']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['created']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['created']['date_format'] = 'custom';
+  $handler->display->display_options['fields']['created']['custom_date_format'] = 'Y-m-d';
+
+  /* Field: FormMobile: Updated date */
+  $handler->display->display_options['fields']['updated']['id'] = 'updated';
+  $handler->display->display_options['fields']['updated']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['updated']['field'] = 'updated';
+  $handler->display->display_options['fields']['updated']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['updated']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['updated']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['updated']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['updated']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['updated']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['updated']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['updated']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['updated']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['updated']['date_format'] = 'custom';
+  $handler->display->display_options['fields']['updated']['custom_date_format'] = 'Y-m-d';
+
+  /* Field: Node: Published */
+  $handler->display->display_options['fields']['status']['id'] = 'status';
+  $handler->display->display_options['fields']['status']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['status']['field'] = 'status';
+  $handler->display->display_options['fields']['status']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['status']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['status']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['status']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['status']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['status']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['status']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['status']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['status']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['status']['type'] = 'true-false';
+  $handler->display->display_options['fields']['status']['not'] = 0;
+
+  /* Sort criterion: Node: Post date */
+  $handler->display->display_options['sorts']['created']['id'] = 'created';
+  $handler->display->display_options['sorts']['created']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['sorts']['created']['field'] = 'created';
+  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+
+  /* Filter: Node: Type */
+  $handler->display->display_options['filters']['formId']['id'] = 'form_id';
+  $handler->display->display_options['filters']['formId']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['filters']['formId']['field'] = 'form_id';
+  $handler->display->display_options['filters']['formId']['operator'] = 'not in';
+  $handler->display->display_options['filters']['formId']['value'] = array('page' => 'page',);
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->display->display_options['path'] = 'list-all-forms';
+  $views[$view->name] = $view;
+  return $views;
+}
