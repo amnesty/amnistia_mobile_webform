@@ -67,3 +67,76 @@ function amnistia_form_mobile_schema() {
   );
   return $schema;
 }
+
+/**
+ * Add a return url field of link type to the Webform content type
+ */
+function amnistia_form_mobile_update_7007() {
+  $fields = array(
+    array(
+      'name' => 'field_return_url',
+      'type' => 'link_field',
+      'label' => 'Return URL',
+      'description' => 'URL used to redirect the user once the form is filled',
+      'settings' => array(
+        'absolute_url' => 1,
+        'validate_url' => 1,
+        'url' => 0,
+        'title' => 'none',
+        'enable_tokens' => 0,
+        'rel_remove' => 'default',
+        'attributes' => array(
+          'target' => 'default',
+          'configurable_class' => 0,
+          'configurable_title' => 0,
+        )
+      )
+    ),
+    array(
+      'name' => 'field_mobile_form',
+      'type' => 'list_boolean',
+      'label' => 'Mobile form',
+      'description' => 'Check if the form should be displayed with the mobile settings',
+      'settings' => array(
+        'allowed_values' => array(0, 1),
+        'validate_url' => 1,
+        'url' => 0,
+        'title' => 'none',
+        'enable_tokens' => 0,
+        'rel_remove' => 'default',
+        'attributes' => array(
+          'target' => 'default',
+          'configurable_class' => 0,
+          'configurable_title' => 0,
+        )
+      )
+    )
+  );
+
+  // Create all fields on the $fields array
+  foreach($fields as $field) {
+    if(!field_info_field($field['name'])) {
+      // Create field
+      field_create_field(array(
+        'field_name' => $field['name'],
+        'type' => $field['type'],
+        'settings' => $field['settings']
+      ));
+
+      // Create instance
+      field_create_instance(array(
+        'field_name' => $field['name'],
+        'entity_type' => 'node',
+        'bundle' => 'webform',
+        'label' => $field['label'],
+        'description' => $field['description'],
+        'required' => FALSE,
+        'settings' => $field['settings']
+      ));
+
+      watchdog('amnistia_form_mobile', t('!field_name was added successfully.', array('!field_name' => $field['name'])));
+    } else {
+      watchdog('amnistia_form_mobile', t('!field_name already exists.', array('!field_name' => $field['name'])));
+    }
+  }
+}

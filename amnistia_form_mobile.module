@@ -6,6 +6,21 @@
  */
 
 /**
+ * Implements hook_init().
+ */
+function amnistia_form_mobile_init() {
+  // Load JS files to transform the forms into mobile forms where appropiate
+  drupal_add_js(
+    drupal_get_path('module', 'amnistia_form_mobile') . '/assets/scripts.js'
+  );
+
+  // Load CSS files to transform the forms into mobile forms where appropiate
+  drupal_add_css(
+    drupal_get_path('module', 'amnistia_form_mobile') . '/assets/style.css'
+  );
+}
+
+/**
  * Implements hook_entity_info().
  */
 function amnistia_form_mobile_entity_info() {
