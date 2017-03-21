@@ -1,5 +1,5 @@
 ; $Id: $
-name = amnistia_form_mobile
+name = Amnistia Form Mobile
 description = Provides Amnistia Form Mobile.
 core = 7.x
 package = Amnistia
