@@ -283,7 +283,6 @@ function amnistia_form_mobile_views_default_views() {
   return amnistia_form_mobile_list_all_forms();
 }
 
-
 /**
  * Begin view.
  */
@@ -305,7 +304,7 @@ function amnistia_form_mobile_list_all_forms() {
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->display->display_options['title'] = 'List All forms';
   $handler->display->display_optinos['access']['type'] = 'role';
-  $handler->display->display_options['access']['role'] = array('3' => '3',);
+  $handler->display->display_options['access']['role'] = array('3' => '3');
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
