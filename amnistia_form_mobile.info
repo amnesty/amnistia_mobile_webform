@@ -8,3 +8,4 @@ version = 7.x-1.0
 dependencies[] = entity
 dependencies[] = webform
 dependencies[] = views
+dependencies[] = link

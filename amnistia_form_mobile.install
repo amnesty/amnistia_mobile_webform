@@ -69,9 +69,11 @@ function amnistia_form_mobile_schema() {
 }
 
 /**
- * Add a return url field of link type to the Webform content type
+ * Implements hook_install().
+ *
+ * Add a return url field of link type, and 'mobile form' field to the Webform content type
  */
-function amnistia_form_mobile_update_7007() {
+function amnistia_form_mobile_install() {
   $fields = array(
     array(
       'name' => 'field_return_url',
@@ -139,4 +141,34 @@ function amnistia_form_mobile_update_7007() {
       watchdog('amnistia_form_mobile', t('!field_name already exists.', array('!field_name' => $field['name'])));
     }
   }
+}
+
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Remove a return url field of link type, and 'mobile form' field to the Webform content type
+ */
+function amnistia_form_mobile_uninstall() {
+    $field = array(
+        'field_name' => 'field_return_url',
+        'entity_type' => 'node',
+        'bundle' => 'webform',
+    );
+    if(!field_info_field($field['name'])) {
+        field_delete_instance($field);
+        field_delete_field($field['field_name']);
+        watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
+    }
+
+    $field = array(
+        'field_name' => 'field_mobile_form',
+        'entity_type' => 'node',
+        'bundle' => 'webform',
+    );
+    if(!field_info_field($field['name'])) {
+        field_delete_instance($field);
+        field_delete_field($field['field_name']);
+        watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
+    }
 }
