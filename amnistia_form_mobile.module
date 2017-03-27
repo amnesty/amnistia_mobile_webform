@@ -523,61 +523,61 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
 /**
  * Implements hook_mail_alter().
  */
-function amnistia_form_mobile_mail_alter(&$message) {
-  $headers = array(
-    'MIME-Version' => '1.0',
-    'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
-    'Content-Transfer-Encoding' => '8Bit',
-    'X-Mailer' => 'Drupal',
-  );
-  foreach ($headers as $key => $value) {
-    $message['headers'][$key] = $value;
-  }
-}
+// function amnistia_form_mobile_mail_alter(&$message) {
+//   $headers = array(
+//     'MIME-Version' => '1.0',
+//     'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
+//     'Content-Transfer-Encoding' => '8Bit',
+//     'X-Mailer' => 'Drupal',
+//   );
+//   foreach ($headers as $key => $value) {
+//     $message['headers'][$key] = $value;
+//   }
+// }
 
 /**
  * Implements hook_mail().
  */
-function amnistia_form_mobile_mail($key, &$message, $params) {
-  // Language selection.
-  $options = array(
-    'langcode' => $message['language']->language,
-  );
-  switch ($key) {
-    case "amnistia_form_mobile_module":
-      $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
-      $message['body'][] = isset($params['body']) ? $params['body'] : NULL;
-      if (isset($params['headers']) && is_array($params['headers'])) {
-        $message['headers'] += $params['headers'];
-      }
-      break;
-  }
-}
+// function amnistia_form_mobile_mail($key, &$message, $params) {
+//   // Language selection.
+//   $options = array(
+//     'langcode' => $message['language']->language,
+//   );
+//   switch ($key) {
+//     case "amnistia_form_mobile_module":
+//       $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
+//       $message['body'][] = isset($params['body']) ? $params['body'] : NULL;
+//       if (isset($params['headers']) && is_array($params['headers'])) {
+//         $message['headers'] += $params['headers'];
+//       }
+//       break;
+//   }
+// }
 
 /**
  * Wrapper function to invoke mail.
  */
-function amnistia_form_mobile_send(array $values = array()) {
-  $module = $values['module'];
-  $key = $values['key'];
-  $to = $values['to'];
-  $from = $values['from'];
-  $language = isset($values['lang']) ? $values['lang'] : language_default();
-  $params = array(
-    'subject' => $values['subject'],
-    'body' => $values['body'],
-  );
-  if (array_key_exists('headers', $values)) {
-    $params['headers'] = $values['headers']; // Assumed as an array.
-  }
-  $send = TRUE;
-  $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
-  if ($mail['result']) {
-    return TRUE;
-  }
-  else {
-    $error_msg = 'Failded to send the email in commerce_canvas Module';
-    watchdog('canvas-email', $error_msg, array(), WATCHDOG_ALERT);
-    return FALSE;
-  }
-}
+// function amnistia_form_mobile_send(array $values = array()) {
+//   $module = $values['module'];
+//   $key = $values['key'];
+//   $to = $values['to'];
+//   $from = $values['from'];
+//   $language = isset($values['lang']) ? $values['lang'] : language_default();
+//   $params = array(
+//     'subject' => $values['subject'],
+//     'body' => $values['body'],
+//   );
+//   if (array_key_exists('headers', $values)) {
+//     $params['headers'] = $values['headers']; // Assumed as an array.
+//   }
+//   $send = TRUE;
+//   $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
+//   if ($mail['result']) {
+//     return TRUE;
+//   }
+//   else {
+//     $error_msg = 'Failded to send the email in commerce_canvas Module';
+//     watchdog('canvas-email', $error_msg, array(), WATCHDOG_ALERT);
+//     return FALSE;
+//   }
+// }
