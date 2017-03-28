@@ -60,7 +60,6 @@ function amnistia_form_mobile_entity_info() {
       'id' => 'afme_id',
       'label' => 'email',
     ),
-
     // Use classes from the Entity API module.
     'entity class' => 'Entity',
     'controller class' => 'EntityAPIController',
@@ -74,6 +73,14 @@ function amnistia_form_mobile_entity_info() {
 
     // For content-type entities only.
     'uri callback' => 'amnistia_form_mobile_entity_uri',
+
+    // Presentation mode
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full'),
+        'custom settings' => FALSE,
+      ),
+    ),
   );
   return $return;
 }
@@ -110,6 +117,12 @@ function amnistia_form_mobile_menu() {
     // the loaded object.
     'access callback' => 'amnistia_form_mobile_entity_access',
     'access arguments' => array('view', array(1)),
+  );
+
+  $items['admin/structure/entity_amnistia_form_mobile'] = array(
+    'title' => 'Administer items',
+    'page callback' => 'amnistia_form_mobile_admin_page',
+    'access arguments' => array('administer amnistia_form_mobile entities'),
   );
 
   return $items;
@@ -604,3 +617,68 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
 //     return FALSE;
 //   }
 // }
+
+
+/**
+ * Administration page.
+ */
+function amnistia_form_mobile_admin_page() {
+  $content = array();
+
+  // Link for add new item.
+  $content[] = array(
+    '#type' => 'item',
+    '#markup' => l(t('Add a new Item'), 'item/add'),
+  );
+
+  // Table with all Items.
+  $content['table'] = amnistia_form_mobile_list_entities();
+
+  return $content;
+}
+
+/**
+ * Array table style with the created entities.
+ */
+function amnistia_form_mobile_list_entities() {
+  $content = array();
+
+  $entities = amnistia_form_mobile_load_multiple();
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      $rows[] = array(
+        'data' => array(
+          'id' => $entity->afme_id,
+          'email' => $entity->email,
+          'form_id' => $entity->form_id,
+          'status' => $entity->status,
+          //'item_description' => l($entity->item_description, 'item/' . $entity->afme_id),
+          //'bundle' => $entity->bundle_type,
+        ),
+      );
+    }
+    $content['entity_table'] = array(
+      '#theme' => 'table',
+      '#rows' => $rows,
+      '#header' => array(t('ID'), t('Sender'), t('Form Id'), t('Status')),
+    );
+  }
+  else {
+    $content[] = array(
+      '#type' => 'item',
+      '#markup' => t("There aren't any Items."),
+    );
+  }
+
+  return $content;
+}
+
+function amnistia_form_mobile_load($item_id = NULL, $reset = FALSE) {
+  $item_ids = (isset($item_id) ? array($item_id) : array());
+  $item = amnistia_form_mobile_load_multiple($items_id, $reset);
+  return $item ? reset($item) : FALSE;
+}
+
+function amnistia_form_mobile_load_multiple($items_id = FALSE, $conditions = array(), $reset = FALSE) {
+  return entity_load('amnistia_form_mobile', $items_id, $conditions, $reset);
+}
