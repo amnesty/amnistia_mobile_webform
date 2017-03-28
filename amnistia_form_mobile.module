@@ -21,18 +21,17 @@ function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
     // adding a class in mobile forms
     $node->content['webform']['#form']['#attributes']['class'][] = 'amnistia_form_mobile';
 
-    $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/style.css';
+    $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.css';
     if (is_file($file)) {
       $node->content['#attached']['css']['amnistia_form_mobile_' . $node->type] = array(
           'type' => 'file',
           'group' => CSS_THEME,
           'weight' => 100,
           'data' => $file,
-        //'preprocess' => variable_get('cpn_aggregation_' . $type, FALSE),
       );
     }
 
-    $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/scripts.js';
+    $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.js';
     if (is_file($file)) {
       $node->content['#attached']['js']['amnistia_form_mobile_' . $node->type] = array(
           'type' => 'file',

@@ -1,0 +1,265 @@
+/** RESET clases**/
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos .capa-document {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 0px;
+    overflow: hidden;
+    float: none;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos select.document,
+.node-type-webform .content-form .amnistia_form_mobile .content-datos select.genero,
+.node-type-webform .content-form .amnistia_form_mobile .content-datos select.language,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion select.tipo-via,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion select.provincia,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion select.pais,
+.node-type-webform .content-form .amnistia_form_mobile .content-cuenta select.iban-letras
+{
+    background-position: right 10px center;
+    background-color: #fff;
+    max-width: 100%;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos .number-dni {
+    left: 0px;
+    margin-right: 0px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .shadow {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos .info-nif {
+    margin-left: 0px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos a {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 15px;
+    color: #333;
+    height: 20px;
+    line-height: 20px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-datos .capa-genero,
+.node-type-webform .content-form .amnistia_form_mobile .content-datos .capa-language,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion .capa-tipo-via,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion .capa-provincia,
+.node-type-webform .content-form .amnistia_form_mobile .content-direccion .capa-pais,
+.node-type-webform .content-form .amnistia_form_mobile .content-cuenta .capa-iban-letras{
+    width: 100%;
+    overflow: hidden;
+    float: left;
+    border: none;
+    border-radius: 0px;
+    height: 60px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .webform-next{
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+.webform-conditional-processed .content-end-form .check {
+    /* width: 28px; */
+    /* height: 28px; */
+    /* background: yellow; */
+    /* position: relative; */
+    /* margin-right: 20px; */
+    /* margin-left: 20px; */
+    /* float: left; */
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-end-form input[type=checkbox] {
+     visibility: visible;
+}
+
+/** Styles **/
+
+.node-type-webform .content-form{
+    max-width: 100%;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile label,
+.node-type-webform .content-form .amnistia_form_mobile .caja-content label,
+.node-type-webform .content-form .amnistia_form_mobile p{
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 15px;
+    font-weight: normal;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    color: #333;
+    height: auto;
+    line-height: 21px;
+    margin-right: 10px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile p{
+    padding: 0px 20px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .content-form {
+    max-width: 100%;
+    padding-right: 15px;
+    padding-left: 10px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .box-es-right {
+    width: 100%;
+    float: left;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .box-es-right .three-column {
+    max-width: 100%;
+    min-height: 295px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .box-form-es span {
+    font-size: 15px;
+    line-height: 15px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile input[type="text"],
+.node-type-webform .content-form .amnistia_form_mobile select {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 15px;
+    font-weight: normal;
+    border-radius: 0;
+    padding: 0;
+    padding-left: 10px;
+    height: 60px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile select {
+    background: url(./images/arrow-select.png) no-repeat;
+    background-position: right 10px center;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile input:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+}
+
+.node-type-webform .content-form .amnistia_form_mobile input[type="checkbox"],
+.node-type-webform .content-form .amnistia_form_mobile input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    margin-top: 0;
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: bottom;
+    position: relative;
+    margin-bottom: 0;
+    background: #fff;
+    padding: 0;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile input[type="checkbox"]:checked:after,
+.node-type-webform .content-form .amnistia_form_mobile input[type="radio"]:checked:after {
+    background: url(./images/ico-check.png) center no-repeat #f1e60d;
+    content: "";
+    font-size: 24px;
+    height: 26px;
+    width: 26px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    line-height: 1rem;
+    color: #000;
+    border-radius: 5px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .form-checkboxes .form-type-checkbox{
+    float: left;
+    width: 45px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .form-checkboxes .form-type-checkbox label{
+    display: none;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .form-type-radio label{
+    vertical-align: bottom;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .webform-component-checkboxes + .webform-component-markup {
+    float: left;
+    width: 76%;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .webform-component-checkboxes + .webform-component-markup p {
+    padding: 0px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .webform-component-checkboxes + .webform-component-markup label {
+    line-height: 26px;
+}
+
+.node-type-webform .amnistia_form_mobile .webform-component-fieldset .fieldset-legend,
+.node-type-webform .content-form .amnistia_form_mobile h2{
+    font-family: TradeGothicLT-BoldCondTwenty, HelveticaNeue-CondensedBold, "Franklin Gothic Medium", sans-serif;
+    font-size: 40px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+    display: inline-block;
+    line-height: 40px;
+    font-weight: normal;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .form-submit{
+    max-width: 100%;
+    text-transform: uppercase;
+}
+
+
+.node-type-webform .content-form .amnistia_form_mobile .webform-component--caja-condiciones--caja-botones--comodo-secure p{
+    margin: 0 auto;
+    display: block;
+    width: 200px;
+    margin-bottom: 25px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .caja-checkbox div{
+    text-align: left;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .form-actions{
+    margin: 0px 10px 0px 20px;
+}
