@@ -67,21 +67,15 @@
     margin-left: 0px;
 }
 
-.webform-conditional-processed .content-end-form .check {
-    /* width: 28px; */
-    /* height: 28px; */
-    /* background: yellow; */
-    /* position: relative; */
-    /* margin-right: 20px; */
-    /* margin-left: 20px; */
-    /* float: left; */
-}
-
 .node-type-webform .content-form .amnistia_form_mobile .content-end-form input[type=checkbox] {
      visibility: visible;
 }
 
 /** Styles **/
+
+.node-type-webform .content-form .node {
+    padding: 0px 10px 0px 20px;
+}
 
 .node-type-webform .content-form{
     max-width: 100%;
