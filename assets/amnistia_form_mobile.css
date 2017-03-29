@@ -257,3 +257,65 @@
 .node-type-webform .content-form .amnistia_form_mobile .form-actions{
     margin: 0px 10px 0px 20px;
 }
+
+
+
+/* Swipper */
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-container{
+    width: 80%;
+    overflow: visible;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-wrapper{
+    height: 60px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-wrapper > .swiper-slide{
+    display: inline-block;
+    height: 60px;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-slide-active{
+    background: #f1e60d;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-slide .swiper-input{
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    line-height: 58px;
+    padding: 0;
+    width: auto;
+    text-align: center;
+    margin: 0;
+    display: inline-block;
+    box-shadow: none;
+    color: #333;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-slide .swiper-input-editable{
+    border: 1px solid;
+    width: 75px;
+    line-height: 30px;
+    height: 40px;
+    margin-top: 10px;
+    text-align: right;
+    padding-right: 5px;
+    background: rgba(255,255,255,0.5);
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-slide .swiper-span{
+    line-height: 60px;
+    margin: 0;
+    font-size: 18px;
+    color: #000;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .swiper-container + .webform-component-select{
+    display: none;
+}

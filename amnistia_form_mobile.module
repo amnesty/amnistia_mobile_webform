@@ -260,7 +260,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
       'from' => 'amnistia_form_mobile_module',
       'to' => $entity->email,
     );
-    // amnistia_form_mobile_send($params);
+    amnistia_form_mobile_send($params);
   }
 }
 
