@@ -5,39 +5,37 @@
  * Implements Amnistia form mobile entity.
  */
 
-
 /**
  * Implements hook_node_view().
  *
  * Adding CSS & JS for "mobile forms"
  */
 function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
-
   $node_wrapper = entity_metadata_wrapper('node', $node);
   $is_form_mobile = $node_wrapper->field_mobile_form->value();
 
   if ($node->type == 'webform' && $is_form_mobile && $view_mode == 'full') {
 
-    // adding a class in mobile forms
+    // Adding a class in mobile forms.
     $node->content['webform']['#form']['#attributes']['class'][] = 'amnistia_form_mobile';
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.css';
     if (is_file($file)) {
       $node->content['#attached']['css']['amnistia_form_mobile_' . $node->type] = array(
-          'type' => 'file',
-          'group' => CSS_THEME,
-          'weight' => 100,
-          'data' => $file,
+        'type' => 'file',
+        'group' => CSS_THEME,
+        'weight' => 100,
+        'data' => $file,
       );
     }
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.js';
     if (is_file($file)) {
       $node->content['#attached']['js']['amnistia_form_mobile_' . $node->type] = array(
-          'type' => 'file',
-          'group' => JS_THEME,
-          'weight' => 100,
-          'data' => $file,
+        'type' => 'file',
+        'group' => JS_THEME,
+        'weight' => 100,
+        'data' => $file,
       );
     }
   }
@@ -74,7 +72,7 @@ function amnistia_form_mobile_entity_info() {
     // For content-type entities only.
     'uri callback' => 'amnistia_form_mobile_entity_uri',
 
-    // Presentation mode
+    // Presentation mode.
     'view modes' => array(
       'full' => array(
         'label' => t('Full'),
@@ -259,7 +257,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
       'from' => 'amnistia_form_mobile_module',
       'to' => $entity->email,
     );
-    //amnistia_form_mobile_send($params);
+    // amnistia_form_mobile_send($params);
   }
 }
 
@@ -349,8 +347,8 @@ function amnistia_form_mobile_views_default_views() {
  */
 function amnistia_form_mobile_list_all_forms() {
   /*
-  * View 'list_all_nodes'
-  */
+   * View 'list_all_nodes'
+   */
   $view = views_new_view();
   $view->name = 'list_all_forms';
   $view->description = 'Provide a list of forms, creation dates, owner and status';
@@ -549,7 +547,6 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
     if (!empty($dataSerialized)) {
       $dataUnserialized = unserialize($dataSerialized);
       foreach ($dataUnserialized as $key => $value) {
-        //$form_state['values'][$key] = $value;
         $form['submitted'][$key]['#default_value'] = $value;
       }
     }
@@ -559,65 +556,65 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
 /**
  * Implements hook_mail_alter().
  */
-// function amnistia_form_mobile_mail_alter(&$message) {
-//   $headers = array(
-//     'MIME-Version' => '1.0',
-//     'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
-//     'Content-Transfer-Encoding' => '8Bit',
-//     'X-Mailer' => 'Drupal',
-//   );
-//   foreach ($headers as $key => $value) {
-//     $message['headers'][$key] = $value;
-//   }
-// }
+function amnistia_form_mobile_mail_alter(&$message) {
+  $headers = array(
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  );
+  foreach ($headers as $key => $value) {
+    $message['headers'][$key] = $value;
+  }
+}
 
 /**
  * Implements hook_mail().
  */
-// function amnistia_form_mobile_mail($key, &$message, $params) {
-//   // Language selection.
-//   $options = array(
-//     'langcode' => $message['language']->language,
-//   );
-//   switch ($key) {
-//     case "amnistia_form_mobile_module":
-//       $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
-//       $message['body'][] = isset($params['body']) ? $params['body'] : NULL;
-//       if (isset($params['headers']) && is_array($params['headers'])) {
-//         $message['headers'] += $params['headers'];
-//       }
-//       break;
-//   }
-// }
+function amnistia_form_mobile_mail($key, &$message, $params) {
+  // Language selection.
+  $options = array(
+    'langcode' => $message['language']->language,
+  );
+  switch ($key) {
+    case "amnistia_form_mobile_module":
+      $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
+      $message['body'][] = isset($params['body']) ? $params['body'] : NULL;
+      if (isset($params['headers']) && is_array($params['headers'])) {
+        $message['headers'] += $params['headers'];
+      }
+      break;
+  }
+}
 
 /**
  * Wrapper function to invoke mail.
  */
-// function amnistia_form_mobile_send(array $values = array()) {
-//   $module = $values['module'];
-//   $key = $values['key'];
-//   $to = $values['to'];
-//   $from = $values['from'];
-//   $language = isset($values['lang']) ? $values['lang'] : language_default();
-//   $params = array(
-//     'subject' => $values['subject'],
-//     'body' => $values['body'],
-//   );
-//   if (array_key_exists('headers', $values)) {
-//     $params['headers'] = $values['headers']; // Assumed as an array.
-//   }
-//   $send = TRUE;
-//   $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
-//   if ($mail['result']) {
-//     return TRUE;
-//   }
-//   else {
-//     $error_msg = 'Failded to send the email in commerce_canvas Module';
-//     watchdog('canvas-email', $error_msg, array(), WATCHDOG_ALERT);
-//     return FALSE;
-//   }
-// }
-
+function amnistia_form_mobile_send(array $values = array()) {
+  $module = $values['module'];
+  $key = $values['key'];
+  $to = $values['to'];
+  $from = $values['from'];
+  $language = isset($values['lang']) ? $values['lang'] : language_default();
+  $params = array(
+    'subject' => $values['subject'],
+    'body' => $values['body'],
+  );
+  if (array_key_exists('headers', $values)) {
+    // Assumed as an array.
+    $params['headers'] = $values['headers'];
+  }
+  $send = TRUE;
+  $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
+  if ($mail['result']) {
+    return TRUE;
+  }
+  else {
+    $error_msg = 'Failded to send the email in commerce_canvas Module';
+    watchdog('canvas-email', $error_msg, array(), WATCHDOG_ALERT);
+    return FALSE;
+  }
+}
 
 /**
  * Administration page.
@@ -652,8 +649,6 @@ function amnistia_form_mobile_list_entities() {
           'email' => $entity->email,
           'form_id' => $entity->form_id,
           'status' => $entity->status,
-          //'item_description' => l($entity->item_description, 'item/' . $entity->afme_id),
-          //'bundle' => $entity->bundle_type,
         ),
       );
     }
@@ -673,12 +668,18 @@ function amnistia_form_mobile_list_entities() {
   return $content;
 }
 
+/**
+ * Implements hook_load().
+ */
 function amnistia_form_mobile_load($item_id = NULL, $reset = FALSE) {
   $item_ids = (isset($item_id) ? array($item_id) : array());
   $item = amnistia_form_mobile_load_multiple($items_id, $reset);
   return $item ? reset($item) : FALSE;
 }
 
+/**
+ * Implements hook_load_multiple().
+ */
 function amnistia_form_mobile_load_multiple($items_id = FALSE, $conditions = array(), $reset = FALSE) {
   return entity_load('amnistia_form_mobile', $items_id, $conditions, $reset);
 }
