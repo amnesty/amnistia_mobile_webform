@@ -12,7 +12,7 @@
  */
 function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
   $node_wrapper = entity_metadata_wrapper('node', $node);
-  
+
   if (isset($node_wrapper->field_mobile_form)) {
     $is_form_mobile = $node_wrapper->field_mobile_form->value();
   }
@@ -110,7 +110,7 @@ function amnistia_form_mobile_menu() {
     // This callback function, defined below, gives the page title.
     'title callback' => 'amnistia_form_mobile_entity_page_title',
     // Use the Entity API function entity_view() to display the page.
-    'page callback' => 'entity_view',
+    'page callback' => 'amnistia_form_mobile_admin_page',
     // Pass in the loaded entity object from the URL.
     'page arguments' => array(1),
     // This access callback function is defined in Step 5.
@@ -255,10 +255,12 @@ function amnistia_form_mobile_entity_update($entity, $type) {
 
   if ($entity->status == "1") {
     $params = array(
-      'module' => 'amnistia_form_mobile_module',
-      'key' => 'amnistia_form_mobile_module',
-      'from' => 'amnistia_form_mobile_module',
+      'module' => 'amnistia_form_mobile',
+      'key' => 'amnistia_form_mobile',
+      'from' => 'amnistia_form_mobile',
       'to' => $entity->email,
+      'subject' => 'Remember fill the form',
+      'body' => l(t('Follow the link for complete the form'), $entity->token),
     );
     amnistia_form_mobile_send($params);
   }
@@ -580,9 +582,9 @@ function amnistia_form_mobile_mail($key, &$message, $params) {
     'langcode' => $message['language']->language,
   );
   switch ($key) {
-    case "amnistia_form_mobile_module":
+    case "amnistia_form_mobile":
       $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
-      $message['body'][] = isset($params['body']) ? $params['body'] : NULL;
+      $message['body'] = isset($params['body']) ? $params['body'] : NULL;
       if (isset($params['headers']) && is_array($params['headers'])) {
         $message['headers'] += $params['headers'];
       }
@@ -601,20 +603,20 @@ function amnistia_form_mobile_send(array $values = array()) {
   $language = isset($values['lang']) ? $values['lang'] : language_default();
   $params = array(
     'subject' => $values['subject'],
-    'body' => $values['body'],
+    'body' => array($values['body']),
   );
   if (array_key_exists('headers', $values)) {
     // Assumed as an array.
     $params['headers'] = $values['headers'];
   }
   $send = TRUE;
-  $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
+  $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
   if ($mail['result']) {
     return TRUE;
   }
   else {
-    $error_msg = 'Failded to send the email in commerce_canvas Module';
-    watchdog('canvas-email', $error_msg, array(), WATCHDOG_ALERT);
+    $error_msg = 'Failed to send the email in amnistia_form_mobile Module';
+    watchdog('amnistia_form_mobile', $error_msg, array(), WATCHDOG_ALERT);
     return FALSE;
   }
 }
@@ -627,7 +629,7 @@ function amnistia_form_mobile_admin_page() {
 
   // Link for add new item.
   $content[] = array(
-    '#type' => 'item',
+    '#type' => 'amnistia_form_mobile',
     '#markup' => l(t('Add a new Item'), 'item/add'),
   );
 
@@ -655,7 +657,7 @@ function amnistia_form_mobile_list_entities() {
         ),
       );
     }
-    $content['entity_table'] = array(
+    $content['table'] = array(
       '#theme' => 'table',
       '#rows' => $rows,
       '#header' => array(t('ID'), t('Sender'), t('Form Id'), t('Status')),
