@@ -112,6 +112,31 @@ function amnistia_form_mobile_install() {
           'configurable_title' => 0,
         )
       )
+    ),
+    array(
+        'name' => 'field_time_remember',
+        'type' => 'list_text',
+        'label' => 'Remember in',
+        'description' => 'Select when the system should send an email to the user, if he did not complete the form.',
+        'settings' => array(
+            'allowed_values' => array(
+                '1800' => 'Half hour',
+                '3600' => '1 hour',
+                '14400' => '4 hours',
+                '43200' => '12 hours',
+                '86400' => '1 day',
+                '172800' => '2 day',
+                '345600' => '4 day',
+                '604800' => '1 week',
+                '1209600' => '2 weeks',
+                '2419200' => '4 weeks'
+            ),
+            'attributes' => array(
+                'target' => 'default',
+                'configurable_class' => 0,
+                'configurable_title' => 0,
+            )
+        ),
     )
   );
 
@@ -181,5 +206,16 @@ function amnistia_form_mobile_uninstall() {
         field_delete_instance($field);
         field_delete_field($field['field_name']);
         watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
+    }
+
+    $field = array(
+        'field_name' => 'field_time_remember',
+        'entity_type' => 'node',
+        'bundle' => 'webform',
+    );
+    if(!field_info_field($field['name'])) {
+      field_delete_instance($field);
+      field_delete_field($field['field_name']);
+      watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
     }
 }

@@ -612,6 +612,8 @@ function amnistia_form_mobile_send(array $values = array()) {
   $send = TRUE;
   $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
   if ($mail['result']) {
+    $msg = 'An email reminder was sent to: '.$to;
+    watchdog('amnistia_form_mobile', $msg, array(), WATCHDOG_NOTICE);
     return TRUE;
   }
   else {
@@ -687,4 +689,45 @@ function amnistia_form_mobile_load($item_id = NULL, $reset = FALSE) {
  */
 function amnistia_form_mobile_load_multiple($items_id = FALSE, $conditions = array(), $reset = FALSE) {
   return entity_load('amnistia_form_mobile', $items_id, $conditions, $reset);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function amnistia_form_mobile_cron() {
+
+  // we retrieve all 'amnistia_form_mobile_entity' entitites with status 0
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'amnistia_form_mobile_entity')
+      ->propertyCondition('status', 0);
+  $results = $query->execute();
+
+  if (isset($results['amnistia_form_mobile_entity'])) {
+
+    foreach ($results['amnistia_form_mobile_entity'] as $key => $value) {
+
+      // we retrieve the nid of the webform related with this submission
+      $submission = db_query("SELECT email, form_id, token, created FROM {amnistia_form_mobile} WHERE  afme_id = :afme_id", array(":afme_id" => $value->afme_id))->fetchObject();
+      $webform_id = str_replace('webform_client_form_', '', $submission->form_id);
+      $webform = node_load($webform_id);
+
+      $current = time();
+      if ($webform->field_time_remember['und'][0]['value'] != 0 && ($current > ($submission->created + $webform->field_time_remember['und'][0]['value'])) ) {
+
+        //send email
+        $params = array(
+            'module' => 'amnistia_form_mobile',
+            'key' => 'amnistia_form_mobile',
+            'from' => variable_get('site_mail', ''), // '"Full Name" <email@address.com>'
+            'to' => $submission->email,
+            'subject' => 'Remember fill the form',
+            'body' => l(t('Follow the link for complete the form'), $submission->token),
+        );
+        amnistia_form_mobile_send($params);
+
+        // TODO: change submission status: 0 -> 1
+
+      }
+    }
+  }
 }
