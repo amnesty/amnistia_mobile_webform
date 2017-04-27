@@ -11,6 +11,7 @@
  * Adding CSS & JS for "mobile forms"
  */
 function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
+
   $node_wrapper = entity_metadata_wrapper('node', $node);
 
   if (isset($node_wrapper->field_mobile_form)) {
@@ -18,27 +19,26 @@ function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
   }
 
   if ($node->type == 'webform' && $is_form_mobile && $view_mode == 'full') {
-
     // Adding a class in mobile forms.
     $node->content['webform']['#form']['#attributes']['class'][] = 'amnistia_form_mobile';
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.css';
     if (is_file($file)) {
       $node->content['#attached']['css']['amnistia_form_mobile_' . $node->type] = array(
-        'type' => 'file',
-        'group' => CSS_THEME,
+        'type'   => 'file',
+        'group'  => CSS_THEME,
         'weight' => 100,
-        'data' => $file,
+        'data'   => $file,
       );
     }
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.js';
     if (is_file($file)) {
       $node->content['#attached']['js']['amnistia_form_mobile_' . $node->type] = array(
-        'type' => 'file',
-        'group' => JS_THEME,
+        'type'   => 'file',
+        'group'  => JS_THEME,
         'weight' => 100,
-        'data' => $file,
+        'data'   => $file,
       );
     }
   }
@@ -68,6 +68,7 @@ function amnistia_form_mobile_entity_info() {
     // Have Entity API set up an administrative UI.
     'admin ui' => array(
       'path' => 'admin/amnistia_form_mobile_entity',
+      'controller class' => 'EntityContentUIController',
     ),
     'module' => 'amnistia_form_mobile',
     'access callback' => 'amnistia_form_mobile_entity_access',
@@ -172,32 +173,32 @@ function amnistia_form_mobile_entity_access($op, $entity, $account = NULL) {
  */
 function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
   $form['email'] = array(
-    '#title' => t('eMail'),
-    '#type' => 'textfield',
+    '#title'         => t('eMail'),
+    '#type'          => 'textfield',
     '#default_value' => isset($entity->email) ? $entity->email : '',
   );
 
   $form['token'] = array(
-    '#title' => t('Token'),
-    '#type' => 'textfield',
+    '#title'         => t('Token'),
+    '#type'          => 'textfield',
     '#default_value' => isset($entity->token) ? $entity->token : drupal_hash_base64(isset($entity->email) ? $entity->email : ''),
   );
 
   $form['form_id'] = array(
-    '#title' => t('Id. for related webform'),
-    '#type' => 'textfield',
+    '#title'         => t('Id. for related webform'),
+    '#type'          => 'textfield',
     '#default_value' => isset($entity->form_id) ? $entity->form_id : '',
   );
 
   $form['data_serialized'] = array(
-    '#title' => t('Data serialized'),
-    '#type' => 'textfield',
+    '#title'         => t('Data serialized'),
+    '#type'          => 'textfield',
     '#default_value' => isset($entity->data_serialized) ? $entity->data_serialized : '',
   );
 
   $form['status'] = array(
-    '#type' => 'select',
-    '#title' => t('Status'),
+    '#type'    => 'select',
+    '#title'   => t('Status'),
     '#options' => array(
       0 => t('Incomplete'),
       1 => t('Remember'),
@@ -208,8 +209,8 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
     '#weight' => 999,
   );
 
@@ -255,12 +256,12 @@ function amnistia_form_mobile_entity_update($entity, $type) {
 
   if ($entity->status == "1") {
     $params = array(
-      'module' => 'amnistia_form_mobile',
-      'key' => 'amnistia_form_mobile',
-      'from' => 'amnistia_form_mobile',
-      'to' => $entity->email,
+      'module'  => 'amnistia_form_mobile',
+      'key'     => 'amnistia_form_mobile',
+      'from'    => 'amnistia_form_mobile',
+      'to'      => $entity->email,
       'subject' => 'Remember fill the form',
-      'body' => l(t('Follow the link for complete the form'), $entity->token),
+      'body'    => l(t('Follow the link for complete the form'), $entity->token),
     );
     amnistia_form_mobile_send($params);
   }
@@ -270,6 +271,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
  * Implements hook_form_FORM_ID_alter().
  */
 function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+
   if (isset($form_state['input']['submitted'])) {
     $structure = array();
     $allFields = $form_state['webform']['component_tree']['children'];
@@ -334,199 +336,210 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
  * Implements hook_views_api().
  */
 function amnistia_form_mobile_views_api() {
-  return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'amnistia_form_mobile'),
-  );
+  list($module, $api) = func_get_args();
+  if ($module == "views" && $api == "views_default") {
+    return array("version" => "3.0");
+  }
 }
 
 /**
- * Implememts hook_views_default_views()
+ * Implements hook_views_data().
+ */
+// function amnistia_form_mobile_views_data() {
+//   $data = array();
+//   $data['amnistia_form_mobile']['table'] = array();
+//   return $data;
+// }
+
+/** 
+ * Implementation of hook_views_default_views().
  */
 function amnistia_form_mobile_views_default_views() {
-  return amnistia_form_mobile_list_all_forms();
-}
 
-/**
- * Begin view.
- */
-function amnistia_form_mobile_list_all_forms() {
-  /*
-   * View 'list_all_nodes'
-   */
-  $view = views_new_view();
-  $view->name = 'list_all_forms';
-  $view->description = 'Provide a list of forms, creation dates, owner and status';
-  $view->tag = '';
-  $view->view_php = '';
+  $export = array();
+
+  $view = new view();
+  $view->name = 'amnistia_form_mobile_view';
+  $view->description = '';
+  $view->tag = 'default';
   $view->base_table = 'amnistia_form_mobile';
-  $view->is_cacheable = FALSE;
-  $view->api_version = '3.0-alpha1';
+  $view->human_name = 'Amnistia Form Mobile View';
+  $view->core = 7;
+  $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
-  /* Display: Defaults */
-  $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['title'] = 'List All forms';
-  $handler->display->display_optinos['access']['type'] = 'role';
-  $handler->display->display_options['access']['role'] = array('3' => '3');
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Amnistia Form Mobile View';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['use_more_text'] = 'más';
+  $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['options']['submit_button'] = 'Aplicar';
+  $handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Reiniciar';
+  $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Ordenar por';
+  $handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Ascendente';
   $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '15';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '25';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Elementos por página';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- Todos -';
+  $handler->display->display_options['pager']['options']['expose']['offset_label'] = 'Desplazamiento';
+  $handler->display->display_options['pager']['options']['tags']['first'] = '« primera';
+  $handler->display->display_options['pager']['options']['tags']['previous'] = '‹ anterior';
+  $handler->display->display_options['pager']['options']['tags']['next'] = 'siguiente ›';
+  $handler->display->display_options['pager']['options']['tags']['last'] = 'última »';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
-    'email' => 'email',
-    'formId' => 'form_id',
-    'created' => 'created',
-    'updated' => 'updated',
-    'status' => 'status',
+    'afme_id' => 'afme_id',
   );
-  $handler->display->display_options['style_options']['default'] = 'created';
+  $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
-    'email' => array(
-      'sortable' => 1,
-      'align' => 'views-align-left',
+    'afme_id' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
       'separator' => '',
-    ),
-    'formId' => array(
-      'sortable' => 1,
-      'align' => 'views-align-left',
-      'separator' => '',
-    ),
-    'created' => array(
-      'sortable' => 1,
-      'align' => 'views-align-left',
-      'separator' => '',
-    ),
-    'updated' => array(
-      'sortable' => 1,
-      'align' => 'views-align-left',
-      'separator' => '',
-    ),
-    'status' => array(
-      'sortable' => 1,
-      'align' => 'views-align-left',
-      'separator' => '',
+      'empty_column' => 0,
     ),
   );
-  $handler->display->display_options['style_options']['override'] = 1;
-  $handler->display->display_options['style_options']['sticky'] = 0;
-  $handler->display->display_options['style_options']['order'] = 'desc';
-
-  /* Header: Global: Text área */
-  $handler->display->display_options['header']['area']['id'] = 'area';
-  $handler->display->display_options['header']['area']['table'] = 'views';
-  $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['empty'] = TRUE;
-  $handler->display->display_options['header']['area']['content'] = '<h2>Following is a list of all custom webforms.</h2>';
-  $handler->display->display_options['header']['area']['format'] = '3';
-
-  /* Footer: Global: Text área */
-  $handler->display->display_options['footer']['area']['id'] = 'area';
-  $handler->display->display_options['footer']['area']['table'] = 'views';
-  $handler->display->display_options['footer']['area']['field'] = 'area';
-  $handler->display->display_options['footer']['area']['empty'] = TRUE;
-  $handler->display->display_options['footer']['area']['content'] = '<small>This view shows a llist of all custom webforms</small>';
-  $handler->display->display_options['footer']['area']['format'] = '3';
-
-  /* Field: FormMobile: Email */
-  $handler->display->display_options['fields']['email']['id'] = 'email';
-  $handler->display->display_options['fields']['email']['table'] = 'amnistia_form_mobile';
-  $handler->display->display_options['fields']['email']['field'] = 'email';
-  $handler->display->display_options['fields']['email']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['email']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['email']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['email']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['email']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['email']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['email']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['email']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['email']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['email']['link_to_node'] = 0;
-
-  /* Field: FormMobile: FormId */
-  $handler->display->display_options['fields']['formId']['id'] = 'form_id';
-  $handler->display->display_options['fields']['formId']['table'] = 'amnistia_form_mobile';
-  $handler->display->display_options['fields']['formId,']['field'] = 'form_id';
-  $handler->display->display_options['fields']['formId']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['formId']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['formId']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['formId']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['formId']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['formId']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['formId']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['formId']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['formId']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['formId']['link_to_node'] = 0;
-
-  /* Field: FormMobile: Created date */
+  /* Campo: Mobile form: Created */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'amnistia_form_mobile';
   $handler->display->display_options['fields']['created']['field'] = 'created';
-  $handler->display->display_options['fields']['created']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['created']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['created']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['created']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['created']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['created']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['created']['date_format'] = 'custom';
-  $handler->display->display_options['fields']['created']['custom_date_format'] = 'Y-m-d';
-
-  /* Field: FormMobile: Updated date */
-  $handler->display->display_options['fields']['updated']['id'] = 'updated';
-  $handler->display->display_options['fields']['updated']['table'] = 'amnistia_form_mobile';
-  $handler->display->display_options['fields']['updated']['field'] = 'updated';
-  $handler->display->display_options['fields']['updated']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['updated']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['updated']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['updated']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['updated']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['updated']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['updated']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['updated']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['updated']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['updated']['date_format'] = 'custom';
-  $handler->display->display_options['fields']['updated']['custom_date_format'] = 'Y-m-d';
-
-  /* Field: Node: Published */
+  $handler->display->display_options['fields']['created']['label'] = '';
+  $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['created']['separator'] = '';
+  /* Campo: Mobile form: Etiqueta */
+  $handler->display->display_options['fields']['email']['id'] = 'email';
+  $handler->display->display_options['fields']['email']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['email']['field'] = 'email';
+  $handler->display->display_options['fields']['email']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['email']['alter']['path'] = '[url]';
+  $handler->display->display_options['fields']['email']['element_label_colon'] = FALSE;
+  /* Campo: Mobile form: Status */
   $handler->display->display_options['fields']['status']['id'] = 'status';
   $handler->display->display_options['fields']['status']['table'] = 'amnistia_form_mobile';
   $handler->display->display_options['fields']['status']['field'] = 'status';
-  $handler->display->display_options['fields']['status']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['status']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['status']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['status']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['status']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['status']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['status']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['status']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['status']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['status']['type'] = 'true-false';
-  $handler->display->display_options['fields']['status']['not'] = 0;
-
-  /* Sort criterion: Node: Post date */
+  $handler->display->display_options['fields']['status']['label'] = 'Estado';
+  $handler->display->display_options['fields']['status']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['status']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['status']['separator'] = '';
+  /* Campo: Mobile form: Form_id */
+  $handler->display->display_options['fields']['form_id']['id'] = 'form_id';
+  $handler->display->display_options['fields']['form_id']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['fields']['form_id']['field'] = 'form_id';
+  $handler->display->display_options['fields']['form_id']['element_label_colon'] = FALSE;
+  /* Campo: Mobile form: URL */
+  $handler->display->display_options['fields']['url']['id'] = 'url';
+  $handler->display->display_options['fields']['url']['table'] = 'views_entity_amnistia_form_mobile_entity';
+  $handler->display->display_options['fields']['url']['field'] = 'url';
+  $handler->display->display_options['fields']['url']['label'] = '';
+  $handler->display->display_options['fields']['url']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['url']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['url']['display_as_link'] = FALSE;
+  $handler->display->display_options['fields']['url']['link_to_entity'] = 0;
+  /* Criterio de ordenación: Mobile form: Created */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'amnistia_form_mobile';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-
-  /* Filter: Node: Type */
-  $handler->display->display_options['filters']['formId']['id'] = 'form_id';
-  $handler->display->display_options['filters']['formId']['table'] = 'amnistia_form_mobile';
-  $handler->display->display_options['filters']['formId']['field'] = 'form_id';
-  $handler->display->display_options['filters']['formId']['operator'] = 'not in';
-  $handler->display->display_options['filters']['formId']['value'] = array('page' => 'page');
+  $handler->display->display_options['sorts']['created']['exposed'] = TRUE;
+  $handler->display->display_options['sorts']['created']['expose']['label'] = 'Created';
+  /* Criterio de ordenación: Mobile form: Status */
+  $handler->display->display_options['sorts']['status']['id'] = 'status';
+  $handler->display->display_options['sorts']['status']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['sorts']['status']['field'] = 'status';
+  $handler->display->display_options['sorts']['status']['exposed'] = TRUE;
+  $handler->display->display_options['sorts']['status']['expose']['label'] = 'Status';
+  /* Criterio de ordenación: Mobile form: Updated */
+  $handler->display->display_options['sorts']['updated']['id'] = 'updated';
+  $handler->display->display_options['sorts']['updated']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['sorts']['updated']['field'] = 'updated';
+  $handler->display->display_options['sorts']['updated']['order'] = 'DESC';
+  $handler->display->display_options['sorts']['updated']['exposed'] = TRUE;
+  $handler->display->display_options['sorts']['updated']['expose']['label'] = 'Updated';
+  /* Criterios de filtrado: Mobile form: Status */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'amnistia_form_mobile';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['status']['expose']['operator_id'] = 'status_op';
+  $handler->display->display_options['filters']['status']['expose']['label'] = 'Status';
+  $handler->display->display_options['filters']['status']['expose']['operator'] = 'status_op';
+  $handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
+  $handler->display->display_options['filters']['status']['is_grouped'] = TRUE;
+  $handler->display->display_options['filters']['status']['group_info']['label'] = 'Status';
+  $handler->display->display_options['filters']['status']['group_info']['identifier'] = 'status';
+  $handler->display->display_options['filters']['status']['group_info']['widget'] = 'radios';
+  $handler->display->display_options['filters']['status']['group_info']['remember'] = 1;
+  $handler->display->display_options['filters']['status']['group_info']['default_group'] = '1';
+  $handler->display->display_options['filters']['status']['group_info']['group_items'] = array(
+    1 => array(
+      'title' => 'Incomplete',
+      'operator' => '=',
+      'value' => array(
+        'value' => '0',
+        'min' => '',
+        'max' => '',
+      ),
+    ),
+    2 => array(
+      'title' => 'Notified',
+      'operator' => '=',
+      'value' => array(
+        'value' => '1',
+        'min' => '',
+        'max' => '',
+      ),
+    ),
+    3 => array(
+      'title' => 'Completed',
+      'operator' => '=',
+      'value' => array(
+        'value' => '2',
+        'min' => '',
+        'max' => '',
+      ),
+    ),
+  );
 
   /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->display->display_options['path'] = 'list-all-forms';
-  $views[$view->name] = $view;
-  return $views;
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'admin/amnistia-form-mobile-view';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Amnistia Form Mobile View';
+  $handler->display->display_options['menu']['name'] = 'devel';
+  $translatables['amnistia_form_mobile_view'] = array(
+    t('Master'),
+    t('Amnistia Form Mobile View'),
+    t('más'),
+    t('Aplicar'),
+    t('Reiniciar'),
+    t('Ordenar por'),
+    t('Ascendente'),
+    t('Desc'),
+    t('Elementos por página'),
+    t('- Todos -'),
+    t('Desplazamiento'),
+    t('« primera'),
+    t('‹ anterior'),
+    t('siguiente ›'),
+    t('última »'),
+    t('.'),
+    t('Etiqueta'),
+    t('Estado'),
+    t('Form_id'),
+    t('Created'),
+    t('Status'),
+    t('Updated'),
+    t('Page'),
+  );
+
+  $export['test'] = $view;
+  return $export;
+
 }
 
 /**
@@ -563,10 +576,10 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
  */
 function amnistia_form_mobile_mail_alter(&$message) {
   $headers = array(
-    'MIME-Version' => '1.0',
-    'Content-Type' => 'text/html; charset=iso-8859-1; format=flowed',
+    'MIME-Version'              => '1.0',
+    'Content-Type'              => 'text/html; charset = iso-8859-1; format = flowed',
     'Content-Transfer-Encoding' => '8Bit',
-    'X-Mailer' => 'Drupal',
+    'X-Mailer'                  => 'Drupal',
   );
   foreach ($headers as $key => $value) {
     $message['headers'][$key] = $value;
@@ -596,14 +609,14 @@ function amnistia_form_mobile_mail($key, &$message, $params) {
  * Wrapper function to invoke mail.
  */
 function amnistia_form_mobile_send(array $values = array()) {
-  $module = $values['module'];
-  $key = $values['key'];
-  $to = $values['to'];
-  $from = $values['from'];
-  $language = isset($values['lang']) ? $values['lang'] : language_default();
-  $params = array(
+  $module   = $values['module'];
+  $key      = $values['key'];
+  $to       = $values['to'];
+  $from     = $values['from'];
+  $language = isset($values['lang']) ? $values['lang']: language_default();
+  $params   = array(
     'subject' => $values['subject'],
-    'body' => array($values['body']),
+    'body'    => array($values['body']),
   );
   if (array_key_exists('headers', $values)) {
     // Assumed as an array.
@@ -631,7 +644,7 @@ function amnistia_form_mobile_admin_page() {
 
   // Link for add new item.
   $content[] = array(
-    '#type' => 'amnistia_form_mobile',
+    '#type'   => 'amnistia_form_mobile',
     '#markup' => l(t('Add a new Item'), 'item/add'),
   );
 
@@ -652,25 +665,26 @@ function amnistia_form_mobile_list_entities() {
     foreach ($entities as $entity) {
       $rows[] = array(
         'data' => array(
-          'id' => $entity->afme_id,
-          'email' => $entity->email,
+          'id'      => $entity->afme_id,
+          'email'   => $entity->email,
           'form_id' => $entity->form_id,
-          'status' => $entity->status,
+          'status'  => $entity->status,
         ),
       );
     }
     $content['table'] = array(
-      '#theme' => 'table',
-      '#rows' => $rows,
+      '#theme'  => 'table',
+      '#rows'   => $rows,
       '#header' => array(t('ID'), t('Sender'), t('Form Id'), t('Status')),
     );
   }
   else {
     $content[] = array(
-      '#type' => 'item',
+      '#type'   => 'item',
       '#markup' => t("There aren't any Items."),
     );
   }
+
 
   return $content;
 }
