@@ -127,8 +127,113 @@ function amnistia_form_mobile_menu() {
     'access arguments' => array('administer amnistia_form_mobile entities'),
   );
 
+  $items['custom/ajax-work'] = array(
+    'title' => t('insert AJAX'),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'amnistia_form_entity_callback',
+    'access arguments' => array('administer amnistia_form_mobile entities'),
+  );
+
   return $items;
 }
+
+
+function amnistia_form_entity_callback() {
+  $email = $_POST['submitted']['email'];
+  $form_id = $_POST['form_id'];
+
+  $getStructureAndRows = _get_structure($email, $form_id);
+  $structure = $getStructureAndRows["structure"];
+  $num_rows = $getStructureAndRows["num_rows"];
+
+  _save_data($structure, $email, $form_id, $num_rows);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+
+  if (isset($form_state['input']['submitted'])) {
+    $structure = array();
+    $allFields = $form_state['webform']['component_tree']['children'];
+    foreach ($allFields as $field) {
+      $structure[$field['form_key']] = $field['value'];
+    }
+
+    $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
+    variable_set('email', $email);
+
+    $getStructureAndRows = _get_structure($email, $form_id);
+    $structure = $getStructureAndRows["structure"];
+    $num_rows = $getStructureAndRows["num_rows"];
+
+    _save_data($structure, $email, $form_id, $num_rows);
+  }
+}
+
+function _get_structure($email, $form_id) {
+
+  $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE email = :email AND form_id = :form_id",
+    array(':email' => $email, ':form_id' => $form_id));
+  $num_rows = $result->rowCount();
+
+  $record = $result->fetchAll();
+  foreach ($record as $key => $value) {
+    $data_serialized = $value->data_serialized;
+    $structure = unserialize($data_serialized);
+  }
+
+  foreach ($structure as $key => $value) {
+    if (isset($form_state['input']['submitted'][$key])) {
+      $structure[$key] = $form_state['input']['submitted'][$key];
+    }
+    elseif (isset($_POST['submitted'][$key])) {
+      $structure[$key] = $_POST['submitted'][$key];
+    }
+  }
+  return [
+    "structure" => $structure,
+    "num_rows"  => $num_rows,
+  ];
+}
+
+function _save_data($structure, $email, $form_id, $num_rows) {
+  $serialized = serialize($structure);
+
+  if (($num_rows == 0) && !empty($email)) {
+    $record = db_insert('amnistia_form_mobile')
+      ->fields(array(
+        'email',
+        'token',
+        'form_id',
+        'data_serialized',
+        'created',
+        'updated',
+      ))
+      ->values(array(
+        'email' => $email,
+        'token' => drupal_hash_base64($email),
+        'form_id' => $form_id,
+        'data_serialized' => $serialized,
+        'created' => REQUEST_TIME,
+      )
+    )->execute();
+  }
+  else {
+    $record = db_update('amnistia_form_mobile')
+      ->fields(array(
+        'data_serialized' => $serialized,
+        'updated' => REQUEST_TIME,
+      ))
+      ->condition('email', $email)
+      ->condition('form_id', $form_id)
+      ->execute();
+  }
+}
+
+
+
 
 /**
  * Title callback function registered above.
@@ -272,70 +377,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
   }
 }
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
 
-  if (isset($form_state['input']['submitted'])) {
-    $structure = array();
-    $allFields = $form_state['webform']['component_tree']['children'];
-    foreach ($allFields as $field) {
-      $structure[$field['form_key']] = $field['value'];
-    }
-
-    $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
-    variable_set('email', $email);
-
-    $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE email = :email AND form_id = :form_id",
-      array(':email' => $email, ':form_id' => $form_id));
-    $num_rows = $result->rowCount();
-
-    $record = $result->fetchAll();
-    foreach ($record as $key => $value) {
-      $data_serialized = $value->data_serialized;
-      $structure = unserialize($data_serialized);
-    }
-
-    foreach ($structure as $key => $value) {
-      if (isset($form_state['input']['submitted'][$key])) {
-        $structure[$key] = $form_state['input']['submitted'][$key];
-      }
-    }
-
-    $serialized = serialize($structure);
-
-    if (($num_rows == 0) && !empty($email)) {
-      $record = db_insert('amnistia_form_mobile')
-        ->fields(array(
-          'email',
-          'token',
-          'form_id',
-          'data_serialized',
-          'created',
-          'updated',
-        ))
-        ->values(array(
-          'email' => $email,
-          'token' => drupal_hash_base64($email),
-          'form_id' => $form_id,
-          'data_serialized' => $serialized,
-          'created' => REQUEST_TIME,
-        )
-      )->execute();
-    }
-    else {
-      $record = db_update('amnistia_form_mobile')
-        ->fields(array(
-          'data_serialized' => $serialized,
-          'updated' => REQUEST_TIME,
-        ))
-        ->condition('email', $email)
-        ->condition('form_id', $form_id)
-        ->execute();
-    }
-  }
-}
 
 /**
  * Implements hook_views_api().
