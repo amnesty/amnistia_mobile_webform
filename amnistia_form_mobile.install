@@ -137,6 +137,29 @@ function amnistia_form_mobile_install() {
                 'configurable_title' => 0,
             )
         ),
+    ),
+    array(
+        'name' => 'field_email_reminder_content',
+        'type' => 'text_long',
+        'label' => 'Email reminder content',
+        'description' => 'Select when the system should send an email to the user, if he did not complete the form.',
+        'format' => 'full_html',
+        'widget' => array(
+            'type' => 'text_textarea',
+            'format' => 'full_html'
+        ),
+        'settings' => array(
+            'text_processing' => '1',
+            'format' => 'full_html',
+         ),
+        'display' => array(
+            'format' => 'full_html',
+            'success_text' => array(
+                'label' => 'above',
+                'type' => 'text_default',
+                'format' => 'full_html',
+            ),
+        ),
     )
   );
 
@@ -186,36 +209,35 @@ function amnistia_form_mobile_install() {
  * Remove a return url field of link type, and 'mobile form' field to the Webform content type
  */
 function amnistia_form_mobile_uninstall() {
-    $field = array(
-        'field_name' => 'field_return_url',
-        'entity_type' => 'node',
-        'bundle' => 'webform',
+
+    $fields = array(
+        array(
+            'field_name' => 'field_return_url',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        ),
+        array(
+            'field_name' => 'field_mobile_form',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        ),
+        array(
+            'field_name' => 'field_time_remember',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        ),
+        array(
+            'field_name' => 'field_email_reminder_content',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        )
     );
-    if(!field_info_field($field['name'])) {
+
+    foreach ($fields as $field) {
+      if(!field_info_field($field['name'])) {
         field_delete_instance($field);
         field_delete_field($field['field_name']);
         watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
-    }
-
-    $field = array(
-        'field_name' => 'field_mobile_form',
-        'entity_type' => 'node',
-        'bundle' => 'webform',
-    );
-    if(!field_info_field($field['name'])) {
-        field_delete_instance($field);
-        field_delete_field($field['field_name']);
-        watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
-    }
-
-    $field = array(
-        'field_name' => 'field_time_remember',
-        'entity_type' => 'node',
-        'bundle' => 'webform',
-    );
-    if(!field_info_field($field['name'])) {
-      field_delete_instance($field);
-      field_delete_field($field['field_name']);
-      watchdog('amnistia_form_mobile', t('!field_name was removed successfully.', array('!field_name' => $field['field_name'])));
+      }
     }
 }
