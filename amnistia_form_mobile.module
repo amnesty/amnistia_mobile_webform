@@ -232,9 +232,6 @@ function _save_data($structure, $email, $form_id, $num_rows) {
   }
 }
 
-
-
-
 /**
  * Title callback function registered above.
  */
@@ -360,7 +357,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     ->execute();
 
   //if the status has changed, it sends the email reminder
-  if ($entity->status == "1" && $entity->original->status == "0")
+  if ($entity->status == "1" && $entity->original->status == "0") {
     // we retrieve the nid of the webform related
     $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
     $webform = node_load($webform_id);
