@@ -254,14 +254,19 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     ->condition('afme_id', $id)
     ->execute();
 
-  if ($entity->status == "1") {
+  //if the status has changed, it sends the email reminder
+  if ($entity->status == "1" && $entity->original->status == "0")
+    // we retrieve the nid of the webform related
+    $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
+    $webform = node_load($webform_id);
+    
     $params = array(
-      'module'  => 'amnistia_form_mobile',
-      'key'     => 'amnistia_form_mobile',
-      'from'    => 'amnistia_form_mobile',
-      'to'      => $entity->email,
-      'subject' => 'Remember fill the form',
-      'body'    => l(t('Follow the link for complete the form'), $entity->token),
+      'module' => 'amnistia_form_mobile',
+      'key' => 'amnistia_form_mobile',
+      'from' => variable_get('site_mail', ''), // '"Full Name" <email@address.com>',
+      'to' => $entity->email,
+      'subject' => '[Amnistia] Remember fill the form',
+      'body' => $webform->field_email_reminder_content['und'][0]['value']
     );
     amnistia_form_mobile_send($params);
   }
@@ -622,7 +627,6 @@ function amnistia_form_mobile_send(array $values = array()) {
     // Assumed as an array.
     $params['headers'] = $values['headers'];
   }
-  $send = TRUE;
   $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
   if ($mail['result']) {
     $msg = 'An email reminder was sent to: '.$to;
@@ -721,26 +725,32 @@ function amnistia_form_mobile_cron() {
     foreach ($results['amnistia_form_mobile_entity'] as $key => $value) {
 
       // we retrieve the nid of the webform related with this submission
-      $submission = db_query("SELECT email, form_id, token, created FROM {amnistia_form_mobile} WHERE  afme_id = :afme_id", array(":afme_id" => $value->afme_id))->fetchObject();
-      $webform_id = str_replace('webform_client_form_', '', $submission->form_id);
+      $entity_submission = entity_load_single('amnistia_form_mobile_entity', array($value->afme_id));
+
+      $webform_id = str_replace('webform_client_form_', '', $entity_submission->form_id);
       $webform = node_load($webform_id);
 
       $current = time();
-      if ($webform->field_time_remember['und'][0]['value'] != 0 && ($current > ($submission->created + $webform->field_time_remember['und'][0]['value'])) ) {
 
-        //send email
-        $params = array(
-            'module' => 'amnistia_form_mobile',
-            'key' => 'amnistia_form_mobile',
-            'from' => variable_get('site_mail', ''), // '"Full Name" <email@address.com>'
-            'to' => $submission->email,
-            'subject' => 'Remember fill the form',
-            'body' => l(t('Follow the link for complete the form'), $submission->token),
-        );
-        amnistia_form_mobile_send($params);
+      $webform->field_time_remember['und'][0]['value'] = 1;
 
-        // TODO: change submission status: 0 -> 1
+      if ($webform && $webform->field_time_remember['und'][0]['value'] != 0 && ($current > ($entity_submission->created + $webform->field_time_remember['und'][0]['value'])) ) {
 
+        // we replace the shortcode ([FORM_LINK text="here"]) by a link, if the shortcode exists
+        $link_text = '';
+        preg_match('/\[FORM_LINK(.+?)?\](?:(.+?)?\[\/FORM_LINK\])?/', $webform->field_email_reminder_content['und'][0]['value'], $matches);
+        if (isset($matches[1])) preg_match('/"(.*?)"/', $matches[1], $matches2);
+        if (isset($matches2[1])) $link_text = $matches2[1];
+        if (!empty($link_text)) {
+          $options = array('absolute' => TRUE);
+          $url = url('node/' . $webform->nid, $options).'?token='.$entity_submission->token;
+          $link = l($link_text, $url);
+          $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
+        }
+
+        // change submission status: 0 -> 1 (Automatically it sends email reminder)
+        $entity_submission->status = 1;
+        $entity_submission->save();
       }
     }
   }
