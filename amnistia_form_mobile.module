@@ -773,9 +773,7 @@ function amnistia_form_mobile_cron() {
       $webform = node_load($webform_id);
 
       $current = time();
-
-      $webform->field_time_remember['und'][0]['value'] = 1;
-
+      
       if ($webform && $webform->field_time_remember['und'][0]['value'] != 0 && ($current > ($entity_submission->created + $webform->field_time_remember['und'][0]['value'])) ) {
 
         // we replace the shortcode ([FORM_LINK text="here"]) by a link, if the shortcode exists
