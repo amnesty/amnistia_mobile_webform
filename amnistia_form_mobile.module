@@ -286,9 +286,10 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
     '#default_value' => isset($entity->token) ? $entity->token : drupal_hash_base64(isset($entity->email) ? $entity->email : ''),
   );
 
-  $form['form_id'] = array(
+  // named 'amnistia_form_id' because form_id has a conflict.
+  $form['amnistia_form_id'] = array(
     '#title'         => t('Id. for related webform'),
-    '#type'          => 'textfield',
+    '#type'          => 'hidden',
     '#default_value' => isset($entity->form_id) ? $entity->form_id : '',
   );
 
@@ -328,6 +329,8 @@ function amnistia_form_mobile_entity_form_submit($form, &$form_state) {
   // Make use of Entity API class.
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
 
+  $entity->form_id = $form_state['input']['amnistia_form_id'];
+
   if (isset($entity->created)) {
     $entity->update = strtotime('now');
   }
@@ -352,11 +355,11 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     ->fields(array(
       'updated' => REQUEST_TIME,
     ))
-    ->condition('form_id', $type)
+    ->condition('form_id', $entity->form_id)
     ->condition('afme_id', $id)
     ->execute();
 
-  //if the status has changed, it sends the email reminder
+  // if the status has changed, it sends the email reminder
   if ($entity->status == "1" && $entity->original->status == "0") {
     // we retrieve the nid of the webform related
     $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
@@ -770,7 +773,7 @@ function amnistia_form_mobile_cron() {
       $webform = node_load($webform_id);
 
       $current = time();
-      
+
       if ($webform && $webform->field_time_remember['und'][0]['value'] != 0 && ($current > ($entity_submission->created + $webform->field_time_remember['und'][0]['value'])) ) {
 
         // we replace the shortcode ([FORM_LINK text="here"]) by a link, if the shortcode exists
@@ -785,7 +788,7 @@ function amnistia_form_mobile_cron() {
           $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
         }
 
-        // change submission status: 0 -> 1 (Automatically it sends email reminder)
+        // change submission status: 0 (incomplete) -> 1 (remembered) (Automatically it sends email reminder)
         $entity_submission->status = 1;
         $entity_submission->save();
       }
