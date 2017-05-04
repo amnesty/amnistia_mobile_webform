@@ -139,10 +139,28 @@ function amnistia_form_mobile_install() {
         ),
     ),
     array(
+        'name' => 'field_email_reminder_subject',
+        'type' => 'text',
+        'label' => 'Email reminder Subject',
+        'settings' => array (),
+        'default_value' => array(
+            array('value' => '[Amnistia] Remember complete the form')
+        )
+    ),
+    array(
+        'name' => 'field_email_reminder_from',
+        'type' => 'text',
+        'label' => 'Email reminder From',
+        'settings' => array (),
+        'default_value' => array(
+            array('value' => variable_get('site_mail', ''))
+        )
+    ),
+    array(
         'name' => 'field_email_reminder_content',
         'type' => 'text_long',
-        'label' => 'Email reminder content',
-        'description' => 'Select when the system should send an email to the user, if he did not complete the form.',
+        'label' => 'Email reminder Content',
+        'description' => '[FORM_LINK text="here"] You can use this shortcode to generate a link to the this form.',
         'format' => 'full_html',
         'widget' => array(
             'type' => 'text_textarea',
@@ -159,7 +177,7 @@ function amnistia_form_mobile_install() {
                 'type' => 'text_default',
                 'format' => 'full_html',
             ),
-        ),
+        )
     )
   );
 
@@ -170,7 +188,7 @@ function amnistia_form_mobile_install() {
       field_create_field(array(
         'field_name' => $field['name'],
         'type' => $field['type'],
-        'settings' => $field['settings']
+        'settings' => $field['settings'],
       ));
 
       // Create instance
@@ -181,7 +199,8 @@ function amnistia_form_mobile_install() {
           'label' => $field['label'],
           'description' => $field['description'],
           'required' => FALSE,
-          'settings' => $field['settings']
+          'settings' => $field['settings'],
+          'default_value' => $field['default_value']
       );
 
       if($field['name'] == 'field_mobile_form'){
@@ -223,6 +242,16 @@ function amnistia_form_mobile_uninstall() {
         ),
         array(
             'field_name' => 'field_time_remember',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        ),
+        array(
+            'field_name' => 'field_email_reminder_subject',
+            'entity_type' => 'node',
+            'bundle' => 'webform',
+        ),
+        array(
+            'field_name' => 'field_email_reminder_from',
             'entity_type' => 'node',
             'bundle' => 'webform',
         ),

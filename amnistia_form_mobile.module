@@ -368,9 +368,9 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     $params = array(
       'module' => 'amnistia_form_mobile',
       'key' => 'amnistia_form_mobile',
-      'from' => variable_get('site_mail', ''), // '"Full Name" <email@address.com>',
+      'from' => $webform->field_email_reminder_from['und'][0]['value'],
       'to' => $entity->email,
-      'subject' => '[Amnistia] Remember fill the form',
+      'subject' => $webform->field_email_reminder_subject['und'][0]['value'],
       'body' => $webform->field_email_reminder_content['und'][0]['value']
     );
     amnistia_form_mobile_send($params);
@@ -643,7 +643,7 @@ function amnistia_form_mobile_mail($key, &$message, $params) {
   );
   switch ($key) {
     case "amnistia_form_mobile":
-      $message['subject'] = isset($params['subject']) ? $params['subject'] : $message['subject'] = t('Fill the form at @form_dir', array('@form_dir' => variable_get('@form_dir', 'mobile form')), $options);
+      $message['subject'] = isset($params['subject']) ? $params['subject'] : '[Amnistia] Remember fill the form';
       $message['body'] = isset($params['body']) ? $params['body'] : NULL;
       if (isset($params['headers']) && is_array($params['headers'])) {
         $message['headers'] += $params['headers'];
