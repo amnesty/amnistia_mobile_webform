@@ -92,7 +92,7 @@ function amnistia_form_mobile_entity_info() {
  */
 function amnistia_form_mobile_entity_uri($entity) {
   return array(
-    'path' => 'amnistia_form_mobile_entity/' . $entity->afme_id,
+    'path' => 'admin/amnistia_form_mobile_entity/' . $entity->afme_id,
   );
 }
 
@@ -105,7 +105,7 @@ function amnistia_form_mobile_menu() {
   // Register for the URL that amnistia_form_mobile_entity_uri() returns.
   // The wildcard %entity_object in the URL is handled by the Entity
   // API function entity_object_load().
-  $items['amnistia_form_mobile_entity/%entity_object'] = array(
+  $items['admin/amnistia_form_mobile_entity/%entity_object'] = array(
     // entity_object_load() needs to know what the entity type is.
     'load arguments' => array('amnistia_form_mobile_entity'),
     // This callback function, defined below, gives the page title.
@@ -121,11 +121,13 @@ function amnistia_form_mobile_menu() {
     'access arguments' => array('view', array(1)),
   );
 
+  
   $items['admin/structure/entity_amnistia_form_mobile'] = array(
     'title' => 'Administer items',
-    'page callback' => 'amnistia_form_mobile_admin_page',
+    'page callback' => 'amnistia_form_mobile_entity_form',
     'access arguments' => array('administer amnistia_form_mobile entities'),
   );
+  
 
   $items['custom/ajax-work'] = array(
     'title' => t('insert AJAX'),
@@ -137,7 +139,9 @@ function amnistia_form_mobile_menu() {
   return $items;
 }
 
-
+/**
+ * AJAX callback.
+ */
 function amnistia_form_entity_callback() {
   $email = $_POST['submitted']['email'];
   $form_id = $_POST['form_id'];
@@ -172,6 +176,10 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
   }
 }
 
+
+/**
+ * return the structure from database for form data.
+ */
 function _get_structure($email, $form_id) {
 
   $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE email = :email AND form_id = :form_id",
@@ -198,6 +206,9 @@ function _get_structure($email, $form_id) {
   ];
 }
 
+/**
+ * Insert or update values from form_mobile.
+ */
 function _save_data($structure, $email, $form_id, $num_rows) {
   $serialized = serialize($structure);
 
@@ -244,7 +255,7 @@ function amnistia_form_mobile_entity_page_title($entity) {
  */
 function amnistia_form_mobile_permission() {
   return array(
-    'view aminstia_form_mobile_entity' => array(
+    'view amnistia_form_mobile_entity' => array(
       'title' => t('View my entity content'),
     ),
     'administer amnistia_form_mobile_entity' => array(
@@ -359,14 +370,12 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     ->condition('afme_id', $id)
     ->execute();
 
-
   // if the status has changed, it sends the email reminder
-
   if ($entity->status == "1" && $entity->original->status == "0") {
     // we retrieve the nid of the webform related
     $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
     $webform = node_load($webform_id);
-    
+
     $params = array(
       'module' => 'amnistia_form_mobile',
       'key' => 'amnistia_form_mobile',
@@ -378,8 +387,6 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     amnistia_form_mobile_send($params);
   }
 }
-
-
 
 /**
  * Implements hook_views_api().
@@ -465,7 +472,7 @@ function amnistia_form_mobile_views_default_views() {
   $handler->display->display_options['fields']['email']['table'] = 'amnistia_form_mobile';
   $handler->display->display_options['fields']['email']['field'] = 'email';
   $handler->display->display_options['fields']['email']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['email']['alter']['path'] = '[url]';
+  $handler->display->display_options['fields']['email']['alter']['path'] = 'entity_amnistia_form_mobile/';
   $handler->display->display_options['fields']['email']['element_label_colon'] = FALSE;
   /* Campo: Mobile form: Status */
   $handler->display->display_options['fields']['status']['id'] = 'status';
@@ -733,7 +740,6 @@ function amnistia_form_mobile_list_entities() {
     );
   }
 
-
   return $content;
 }
 
@@ -741,7 +747,7 @@ function amnistia_form_mobile_list_entities() {
  * Implements hook_load().
  */
 function amnistia_form_mobile_load($item_id = NULL, $reset = FALSE) {
-  $item_ids = (isset($item_id) ? array($item_id) : array());
+  $item_id = (isset($item_id) ? array($item_id) : array());
   $item = amnistia_form_mobile_load_multiple($items_id, $reset);
   return $item ? reset($item) : FALSE;
 }
@@ -759,7 +765,7 @@ function amnistia_form_mobile_load_multiple($items_id = FALSE, $conditions = arr
 function amnistia_form_mobile_cron() {
 
   // we retrieve all 'amnistia_form_mobile_entity' entitites with status 0
-  $query = new EntityFieldQuery;
+  $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'amnistia_form_mobile_entity')
       ->propertyCondition('status', 0);
   $results = $query->execute();
