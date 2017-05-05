@@ -370,7 +370,6 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     ->condition('afme_id', $id)
     ->execute();
 
-
   if ($entity->status == "1" && $entity->original->status == "0") {
     // we retrieve the nid of the webform related
     $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
