@@ -470,7 +470,6 @@ function amnistia_form_mobile_views_default_views() {
   $handler->display->display_options['fields']['email']['id'] = 'email';
   $handler->display->display_options['fields']['email']['table'] = 'amnistia_form_mobile';
   $handler->display->display_options['fields']['email']['field'] = 'email';
-  $handler->display->display_options['fields']['email']['alter']['make_link'] = TRUE;
   $handler->display->display_options['fields']['email']['alter']['path'] = 'entity_amnistia_form_mobile/';
   $handler->display->display_options['fields']['email']['element_label_colon'] = FALSE;
   /* Campo: Mobile form: Status */
@@ -491,10 +490,8 @@ function amnistia_form_mobile_views_default_views() {
   $handler->display->display_options['fields']['url']['table'] = 'views_entity_amnistia_form_mobile_entity';
   $handler->display->display_options['fields']['url']['field'] = 'url';
   $handler->display->display_options['fields']['url']['label'] = '';
-  $handler->display->display_options['fields']['url']['exclude'] = TRUE;
   $handler->display->display_options['fields']['url']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['url']['display_as_link'] = FALSE;
-  $handler->display->display_options['fields']['url']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['url']['link_to_entity'] = 1;
   /* Criterio de ordenación: Mobile form: Created */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'amnistia_form_mobile';
