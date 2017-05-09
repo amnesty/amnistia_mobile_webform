@@ -121,13 +121,11 @@ function amnistia_form_mobile_menu() {
     'access arguments' => array('view', array(1)),
   );
 
-  
   $items['admin/structure/entity_amnistia_form_mobile'] = array(
     'title' => 'Administer items',
     'page callback' => 'amnistia_form_mobile_entity_form',
     'access arguments' => array('administer amnistia_form_mobile entities'),
   );
-  
 
   $items['custom/ajax-work'] = array(
     'title' => t('insert AJAX'),
@@ -144,6 +142,11 @@ function amnistia_form_mobile_menu() {
  */
 function amnistia_form_entity_callback() {
   $email = $_POST['submitted']['email'];
+
+  if (empty($email)) {
+    $email = variable_get('email');
+  }
+
   $form_id = $_POST['form_id'];
 
   $getStructureAndRows = _get_structure($email, $form_id);
@@ -176,7 +179,6 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
   }
 }
 
-
 /**
  * return the structure from database for form data.
  */
@@ -186,10 +188,16 @@ function _get_structure($email, $form_id) {
     array(':email' => $email, ':form_id' => $form_id));
   $num_rows = $result->rowCount();
 
-  $record = $result->fetchAll();
-  foreach ($record as $key => $value) {
-    $data_serialized = $value->data_serialized;
-    $structure = unserialize($data_serialized);
+  if ($num_rows != 0) {
+    $record = $result->fetchAll();
+    foreach ($record as $key => $value) {
+      $data_serialized = $value->data_serialized;
+      $structure = unserialize($data_serialized);
+    }
+  }
+
+  foreach ($_POST['submitted'] as $key => $value) {
+    $structure[$key] = $value;
   }
 
   foreach ($structure as $key => $value) {
@@ -200,6 +208,7 @@ function _get_structure($email, $form_id) {
       $structure[$key] = $_POST['submitted'][$key];
     }
   }
+
   return [
     "structure" => $structure,
     "num_rows"  => $num_rows,
