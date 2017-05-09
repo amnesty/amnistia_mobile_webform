@@ -177,6 +177,25 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
 
     _save_data($structure, $email, $form_id, $num_rows);
   }
+
+  array_unshift($form['#submit'], '_submit_form_mobile');
+}
+
+function _submit_form_mobile($form, &$form_state) {
+  $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
+  $form_id = $form_state['input']['form_id'];
+
+  if ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count']) {
+    $record = db_update('amnistia_form_mobile')
+      ->fields(array(
+        'status' => 2,
+        'updated' => REQUEST_TIME,
+      ))
+      ->condition('email', $email)
+      ->condition('form_id', $form_id)
+      ->execute();
+  }
+
 }
 
 /**
