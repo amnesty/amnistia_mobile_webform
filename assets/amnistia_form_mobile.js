@@ -2,9 +2,8 @@
   Drupal.behaviors.myajax = {
     attach: function(context,settings){
      // $('.webform-component--email', context).once().focusout(function(e){
-      $('[class*=" webform-component-"]', context).once().focusout(function(e) {
-        $(this).addClass('ajaxafy');
-        e.preventDefault();
+     // $('input[class*=" webform-component-"]', context).once('myajax').focusout(function(event) {
+      $('[id*="edit-submitted"]', context).once('myajax').focusout(function(event) {
         $.ajax({
           type: "POST",
           url: Drupal.settings.basePath + 'custom/ajax-work',
@@ -13,7 +12,7 @@
             Drupal.attachBehaviors(document);
           },
           error: function(data){
-            console.log(data);
+            // console.log(data);
           }
         });
       });

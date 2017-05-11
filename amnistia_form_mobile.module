@@ -141,7 +141,8 @@ function amnistia_form_mobile_menu() {
  * AJAX callback.
  */
 function amnistia_form_entity_callback() {
-  $email = $_POST['submitted']['email'];
+
+  $email = _get_email_from_array_recursive($_POST);
 
   if (empty($email)) {
     $email = variable_get('email');
@@ -168,8 +169,9 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
       $structure[$field['form_key']] = $field['value'];
     }
 
-    $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
-    variable_set('email', $email);
+    $email = _get_email_from_array_recursive($form_state);
+    
+    //variable_set('email', $email);
 
     $getStructureAndRows = _get_structure($email, $form_id);
     $structure = $getStructureAndRows["structure"];
@@ -182,10 +184,26 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
 }
 
 /**
+ * Return email from recursive array.
+ */
+function _get_email_from_array_recursive($array) {
+  array_walk_recursive($array, function ($value, $key) {
+    if (preg_match('/email/', strtolower($key)) == TRUE) {
+      variable_set('email', $value);
+    }
+  });
+
+  $email = variable_get('email');
+
+  return $email;
+}
+
+/**
  * Change status to completed when the last step of form is submitted.
  */
 function _submit_form_mobile($form, &$form_state) {
-  $email = isset($form_state['input']['submitted']['email']) ? $form_state['input']['submitted']['email'] : variable_get('email');
+
+  $email = _get_email_from_array_recursive($array); 
   $form_id = $form_state['input']['form_id'];
 
   if ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count']) {
