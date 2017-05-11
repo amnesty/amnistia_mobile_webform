@@ -131,7 +131,8 @@ function amnistia_form_mobile_menu() {
     'title' => 'insert AJAX',
     'type' => MENU_CALLBACK,
     'page callback' => 'amnistia_form_entity_callback',
-    'access arguments' => array('administer amnistia_form_mobile entities'),
+    'access callback' => TRUE,
+    //'access arguments' => array('administer amnistia_form_mobile entities'),
   );
 
   return $items;
