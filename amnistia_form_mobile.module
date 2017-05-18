@@ -121,11 +121,11 @@ function amnistia_form_mobile_menu() {
     'access arguments' => array('view', array(1)),
   );
 
-  $items['admin/structure/entity_amnistia_form_mobile'] = array(
+ /* $items['admin/structure/entity_amnistia_form_mobile'] = array(
     'title' => 'Administer items',
     'page callback' => 'amnistia_form_mobile_entity_form',
     'access arguments' => array('administer amnistia_form_mobile entities'),
-  );
+  );*/
 
   $items['custom/ajax-work'] = array(
     'title' => 'insert AJAX',
@@ -188,14 +188,15 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
  * Return email from recursive array.
  */
 function _get_email_from_array_recursive($array) {
-  array_walk_recursive($array, function ($value, $key) {
-    if (preg_match('/email/', strtolower($key)) == TRUE) {
-      variable_set('email', $value);
-    }
-  });
+  if (!empty($array)) {
+    array_walk_recursive($array, function ($value, $key) {
+      if (preg_match('/email/', strtolower($key)) == TRUE) {
+        variable_set('email', $value);
+      }
+    });
 
-  $email = variable_get('email');
-
+    $email = variable_get('email');
+  }
   return $email;
 }
 
