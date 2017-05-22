@@ -172,7 +172,6 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
     }
 
     $email = _get_email_from_array_recursive($form_state);
-    
     $getStructureAndRows = _get_structure($email, $form_id);
     $structure = $getStructureAndRows["structure"];
     $num_rows = $getStructureAndRows["num_rows"];
@@ -424,6 +423,21 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     // We retrieve the nid of the webform related.
     $webform_id = str_replace('webform_client_form_', '', $entity->form_id);
     $webform = node_load($webform_id);
+
+    $link_text = '';
+    preg_match('/\[FORM_LINK(.+?)?\](?:(.+?)?\[\/FORM_LINK\])?/', $webform->field_email_reminder_content['und'][0]['value'], $matches);
+    if (isset($matches[1])) {
+      preg_match('/"(.*?)"/', $matches[1], $matches2);
+    }
+    if (isset($matches2[1])) {
+      $link_text = $matches2[1];
+    }
+    if (!empty($link_text)) {
+      $options = array('absolute' => TRUE);
+      $url = url('node/' . $webform->nid, $options) . '?token=' . $entity->token;
+      $link = l($link_text, $url);
+      $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
+    }
 
     $params = array(
       'module' => 'amnistia_form_mobile',
@@ -708,7 +722,8 @@ function amnistia_form_mobile_send(array $values = array()) {
   $to       = $values['to'];
   $from     = $values['from'];
   $language = isset($values['lang']) ? $values['lang'] : language_default();
-  $params   = array(
+
+  $params = array(
     'subject' => $values['subject'],
     'body'    => array($values['body']),
   );
@@ -716,6 +731,7 @@ function amnistia_form_mobile_send(array $values = array()) {
     // Assumed as an array.
     $params['headers'] = $values['headers'];
   }
+
   $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
   if ($mail['result']) {
     $msg = 'An email reminder was sent to: ' . $to;
