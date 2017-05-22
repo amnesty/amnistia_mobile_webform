@@ -146,8 +146,8 @@ function amnistia_form_entity_callback() {
 
   $email = _get_email_from_array_recursive($_POST);
 
-  if (empty($email)) {
-    $email = variable_get('email');
+  if (empty($email) && !empty($_SESSION['amnistia_form_mobile_email'])) {
+    $email = $_SESSION['amnistia_form_mobile_email'];
   }
 
   $form_id = $_POST['form_id'];
@@ -173,8 +173,6 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
 
     $email = _get_email_from_array_recursive($form_state);
     
-    //variable_set('email', $email);
-
     $getStructureAndRows = _get_structure($email, $form_id);
     $structure = $getStructureAndRows["structure"];
     $num_rows = $getStructureAndRows["num_rows"];
@@ -192,7 +190,7 @@ function _get_email_from_array_recursive($array) {
   if (!empty($array)) {
     array_walk_recursive($array, function ($value, $key) {
       if (preg_match('/email/', strtolower($key)) == TRUE) {
-        variable_set('email', $value);
+        $_SESSION['amnistia_form_mobile_email'] = $value;
       }
     });
 
@@ -443,10 +441,11 @@ function amnistia_form_mobile_entity_update($entity, $type) {
  * Implements hook_views_api().
  */
 function amnistia_form_mobile_views_api() {
-  list($module, $api) = func_get_args();
-  if ($module == "views" && $api == "views_default") {
-    return array("version" => "3.0");
-  }
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'amnistia_form_mobile'),
+    'template path' => drupal_get_path('module', 'amnistia_form_mobile'),
+  );
 }
 
 /**

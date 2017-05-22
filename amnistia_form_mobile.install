@@ -219,7 +219,6 @@ function amnistia_form_mobile_install() {
       watchdog('amnistia_form_mobile', t('!field_name already exists.', array('!field_name' => $field['name'])));
     }
   }
-  module_enable(['link'], TRUE);
 }
 
 
@@ -229,7 +228,6 @@ function amnistia_form_mobile_install() {
  * Remove a return url field of link type, and 'mobile form' field to the Webform content type
  */
 function amnistia_form_mobile_uninstall() {
-
     $fields = array(
         array(
             'field_name' => 'field_return_url',
