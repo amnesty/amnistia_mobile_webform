@@ -92,7 +92,7 @@ function amnistia_form_mobile_entity_info() {
  */
 function amnistia_form_mobile_entity_uri($entity) {
   return array(
-    'path' => 'admin/amnistia_form_mobile_entity/' . $entity->afme_id,
+    'path' => 'admin/amnistia_form_mobile_entity/' . $entity->afme_id . '/edit',
   );
 }
 
@@ -119,6 +119,7 @@ function amnistia_form_mobile_menu() {
     // the loaded object.
     'access callback' => 'amnistia_form_mobile_entity_access',
     'access arguments' => array('view', array(1)),
+    'type' => MENU_CALLBACK,
   );
 
  /* $items['admin/structure/entity_amnistia_form_mobile'] = array(
@@ -205,7 +206,7 @@ function _get_email_from_array_recursive($array) {
  */
 function _submit_form_mobile($form, &$form_state) {
 
-  $email = _get_email_from_array_recursive($array); 
+  $email = _get_email_from_array_recursive($array);
   $form_id = $form_state['input']['form_id'];
 
   if ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count']) {
@@ -432,7 +433,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
       'from' => $webform->field_email_reminder_from['und'][0]['value'],
       'to' => $entity->email,
       'subject' => $webform->field_email_reminder_subject['und'][0]['value'],
-      'body' => $webform->field_email_reminder_content['und'][0]['value']
+      'body' => $webform->field_email_reminder_content['und'][0]['value'],
     );
     amnistia_form_mobile_send($params);
   }

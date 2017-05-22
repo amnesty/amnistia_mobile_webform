@@ -219,6 +219,7 @@ function amnistia_form_mobile_install() {
       watchdog('amnistia_form_mobile', t('!field_name already exists.', array('!field_name' => $field['name'])));
     }
   }
+  module_enable(['link'], TRUE);
 }
 
 
