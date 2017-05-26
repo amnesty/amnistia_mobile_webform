@@ -239,13 +239,14 @@ function _get_structure($email, $form_id) {
   foreach ($_POST['submitted'] as $key => $value) {
     $structure[$key] = $value;
   }
-
-  foreach ($structure as $key => $value) {
-    if (isset($form_state['input']['submitted'][$key])) {
-      $structure[$key] = $form_state['input']['submitted'][$key];
-    }
-    elseif (isset($_POST['submitted'][$key])) {
-      $structure[$key] = $_POST['submitted'][$key];
+  if(isset($structure)){
+    foreach ($structure as $key => $value) {
+      if (isset($form_state['input']['submitted'][$key])) {
+        $structure[$key] = $form_state['input']['submitted'][$key];
+      }
+      elseif (isset($_POST['submitted'][$key])) {
+        $structure[$key] = $_POST['submitted'][$key];
+      }
     }
   }
 
