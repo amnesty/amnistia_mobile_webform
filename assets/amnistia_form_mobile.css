@@ -250,11 +250,20 @@
     text-transform: uppercase;
 }
 
+.node-type-webform .content-form .amnistia_form_mobile .webform-previous.cancel.form-submit {
+    border: none;
+    font-size: 22px;
+    max-width: 100%;
+    text-transform: none;
+    text-align: left;
+}
+
 .node-type-webform .content-form .amnistia_form_mobile .form-managed-file input[type="submit"]{
     width: auto;
     font-size: 14px;
     height: auto;
 }
+
 
 .node-type-webform .content-form .amnistia_form_mobile .webform-component--caja-condiciones--caja-botones--comodo-secure p{
     margin: 0 auto;
