@@ -144,26 +144,22 @@ function amnistia_form_mobile_menu() {
  * AJAX callback.
  */
 function amnistia_form_entity_callback() {
-watchdog(WATCHDOG_NOTICE,'Antes del get mail');
 
   $email = _get_email_from_array_recursive($_POST);
-watchdog(WATCHDOG_NOTICE,'Despues del get mail');
-
+  watchdog(WATCHDOG_PROFILE, 'getemailfromarray' . $email);
   if (empty($email) && !empty($_SESSION['amnistia_form_mobile_email'])) {
     $email = $_SESSION['amnistia_form_mobile_email'];
   }
 
   $form_id = $_POST['form_id'];
-watchdog(WATCHDOG_NOTICE,'Antes del get structure');
+
   $getStructureAndRows = _get_structure($email, $form_id);
-watchdog(WATCHDOG_NOTICE,'Despues del get structure');
 
   $structure = $getStructureAndRows["structure"];
   $num_rows = $getStructureAndRows["num_rows"];
-
-watchdog(WATCHDOG_NOTICE,'Antes del insert');
+  watchdog(WATCHDOG_PROFILE, 'getStructureMail ' . $email);
   _save_data($structure, $email, $form_id, $num_rows);
-watchdog(WATCHDOG_NOTICE, 'Despues del insert');
+
 }
 
 /**
@@ -268,11 +264,7 @@ function _get_structure($email, $form_id) {
  */
 function _save_data($structure, $email, $form_id, $num_rows) {
   $serialized = serialize($structure);
-    watchdog(WATCHDOG_NOTICE, 'numrows = ' . $num_rows);
-    watchdog(WATCHDOG_NOTICE, 'email = ' . $email);
-
   if (($num_rows == 0) && !empty($email)) {
-    watchdog(WATCHDOG_NOTICE, 'into the first if ');
     $record = db_insert('amnistia_form_mobile')
       ->fields(array(
         'email',
@@ -290,10 +282,9 @@ function _save_data($structure, $email, $form_id, $num_rows) {
         'created' => REQUEST_TIME,
       )
     )->execute();
-    watchdog(WATCHDOG_NOTICE, 'post execute the first if ');
+  
   }
   else {
-    watchdog(WATCHDOG_NOTICE, 'into the second if ');
     $record = db_update('amnistia_form_mobile')
       ->fields(array(
         'data_serialized' => $serialized,
@@ -302,11 +293,8 @@ function _save_data($structure, $email, $form_id, $num_rows) {
       ->condition('email', $email)
       ->condition('form_id', $form_id)
       ->execute();
-      watchdog(WATCHDOG_NOTICE, 'post execute the second if ');
+
   }
-
-watchdog(WATCHDOG_NOTICE, 'out of save database');
-
 }
 
 /**
