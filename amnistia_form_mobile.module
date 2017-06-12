@@ -299,7 +299,8 @@ function _save_data($structure, $email, $form_id, $num_rows) {
       ->execute();
   }
 
-  watchdog(WATCHDOG_NOTICE, var_dump($record));
+  var_dump($record);
+  watchdog(WATCHDOG_NOTICE, 'Salgo del Save'); 
 }
 
 /**
