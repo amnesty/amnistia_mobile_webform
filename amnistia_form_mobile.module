@@ -268,8 +268,11 @@ function _get_structure($email, $form_id) {
  */
 function _save_data($structure, $email, $form_id, $num_rows) {
   $serialized = serialize($structure);
+    watchdog(WATCHDOG_NOTICE, 'numrows = ' . $num_rows);
+    watchdog(WATCHDOG_NOTICE, 'email = ' . $email);
 
   if (($num_rows == 0) && !empty($email)) {
+    watchdog(WATCHDOG_NOTICE, 'into the first if ');
     $record = db_insert('amnistia_form_mobile')
       ->fields(array(
         'email',
@@ -287,8 +290,10 @@ function _save_data($structure, $email, $form_id, $num_rows) {
         'created' => REQUEST_TIME,
       )
     )->execute();
+    watchdog(WATCHDOG_NOTICE, 'post execute the first if ');
   }
   else {
+    watchdog(WATCHDOG_NOTICE, 'into the second if ');
     $record = db_update('amnistia_form_mobile')
       ->fields(array(
         'data_serialized' => $serialized,
@@ -297,10 +302,11 @@ function _save_data($structure, $email, $form_id, $num_rows) {
       ->condition('email', $email)
       ->condition('form_id', $form_id)
       ->execute();
+      watchdog(WATCHDOG_NOTICE, 'post execute the second if ');
   }
 
-  var_dump($record);
-  watchdog(WATCHDOG_NOTICE, 'Salgo del Save'); 
+watchdog(WATCHDOG_NOTICE, 'out of save database');
+
 }
 
 /**
