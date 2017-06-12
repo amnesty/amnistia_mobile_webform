@@ -31,6 +31,7 @@ function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
         'data'   => $file,
       );
     }
+    
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.js';
     if (is_file($file)) {
@@ -143,20 +144,26 @@ function amnistia_form_mobile_menu() {
  * AJAX callback.
  */
 function amnistia_form_entity_callback() {
+watchdog(WATCHDOG_NOTICE,'Antes del get mail');
 
   $email = _get_email_from_array_recursive($_POST);
+watchdog(WATCHDOG_NOTICE,'Despues del get mail');
 
   if (empty($email) && !empty($_SESSION['amnistia_form_mobile_email'])) {
     $email = $_SESSION['amnistia_form_mobile_email'];
   }
 
   $form_id = $_POST['form_id'];
-
+watchdog(WATCHDOG_NOTICE,'Antes del get structure');
   $getStructureAndRows = _get_structure($email, $form_id);
+watchdog(WATCHDOG_NOTICE,'Despues del get structure');
+
   $structure = $getStructureAndRows["structure"];
   $num_rows = $getStructureAndRows["num_rows"];
 
+watchdog(WATCHDOG_NOTICE,'Antes del insert');
   _save_data($structure, $email, $form_id, $num_rows);
+watchdog(WATCHDOG_NOTICE, 'Despues del insert');
 }
 
 /**
