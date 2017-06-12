@@ -146,7 +146,7 @@ function amnistia_form_mobile_menu() {
 function amnistia_form_entity_callback() {
 
   $email = _get_email_from_array_recursive($_POST);
-  watchdog(WATCHDOG_PROFILE, 'getemailfromarray' . $email);
+
   if (empty($email) && !empty($_SESSION['amnistia_form_mobile_email'])) {
     $email = $_SESSION['amnistia_form_mobile_email'];
   }
@@ -157,7 +157,7 @@ function amnistia_form_entity_callback() {
 
   $structure = $getStructureAndRows["structure"];
   $num_rows = $getStructureAndRows["num_rows"];
-  watchdog(WATCHDOG_PROFILE, 'getStructureMail ' . $email);
+
   _save_data($structure, $email, $form_id, $num_rows);
 
 }
@@ -189,6 +189,7 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
  * Return email from recursive array.
  */
 function _get_email_from_array_recursive($array) {
+
   if (!empty($array)) {
     array_walk_recursive($array, function ($value, $key) {
       if (preg_match('/email/', strtolower($key)) == TRUE) {
@@ -196,7 +197,8 @@ function _get_email_from_array_recursive($array) {
       }
     });
 
-    $email = variable_get('email');
+    //$email = variable_get('email');
+    $email = $_SESSION['amnistia_form_mobile_email'];
   }
   return $email;
 }
