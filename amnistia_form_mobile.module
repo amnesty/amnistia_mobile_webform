@@ -354,12 +354,6 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
     '#default_value' => isset($entity->form_id) ? $entity->form_id : '',
   );
 
-  $form['data_serialized'] = array(
-    '#title'         => t('Data serialized'),
-    '#type'          => 'textfield',
-    '#default_value' => isset($entity->data_serialized) ? $entity->data_serialized : '',
-  );
-
   $form['status'] = array(
     '#type'    => 'select',
     '#title'   => t('Status'),
@@ -375,12 +369,35 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
   $form['actions']['submit'] = array(
     '#type'   => 'submit',
     '#value'  => t('Save'),
-    '#weight' => 999,
+    '#weight' => 5
   );
+
+  $form['actions']['delete'] = array(
+    '#type'   => 'submit',
+    '#attributes' => array('onclick' => 'if(!confirm("¿Realmente desea eliminar esta entrada?")){return false;}'),
+    '#submit' => array('amnistia_form_mobile_entity_form_delete'),
+    '#value'  => t('Delete'),
+    '#weight' => 10
+  );
+  $form;
 
   field_attach_form('amnistia_form_mobile_entity', $entity, $form, $form_state);
 
   return $form;
+}
+
+/**
+ * Form submission handler for deleting edit form.
+ */
+function amnistia_form_mobile_entity_form_delete($form, &$form_state)
+{
+    // Make use of Entity API class.
+    $entity = entity_ui_form_submit_build_entity($form, $form_state);
+
+    $entity->delete();
+
+    // Redirect to the management page.
+    $form_state['redirect'] = 'admin/amnistia-form-mobile-view';
 }
 
 /**
@@ -402,7 +419,7 @@ function amnistia_form_mobile_entity_form_submit($form, &$form_state) {
   $entity->save();
 
   // Redirect to the management page.
-  $form_state['redirect'] = 'admin/amnistia_form_mobile_entity';
+  $form_state['redirect'] = 'admin/amnistia-form-mobile-view';
 }
 
 /**
