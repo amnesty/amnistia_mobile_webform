@@ -654,30 +654,38 @@ function amnistia_form_mobile_views_default_views() {
 /**
  * Implements hook_form_alter().
  */
-function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($_GET['token'])) {
-    $token = $_GET['token'];
+function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id)
+{
+    if (isset($_GET['token'])) {
+        $token = $_GET['token'];
 
-    $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE token = :token",
-      array(':token' => $token));
-    $record = $result->fetchAll();
+        $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE token = :token",
+          array(':token' => $token));
+        $record = $result->fetchAll();
 
-    $dataSerialized = NULL;
-    $email = NULL;
+        $dataSerialized = null;
+        $email = null;
 
-    foreach ($record as $key => $value) {
-      if ($value->form_id == $form_id) {
-        $dataSerialized = $value->data_serialized;
-      }
+        foreach ($record as $key => $value) {
+            if ($value->form_id == $form_id) {
+                $dataSerialized = $value->data_serialized;
+            }
+        }
+
+        if (!empty($dataSerialized)) {
+            $dataUnserialized = unserialize($dataSerialized);
+
+            array_walk_recursive($dataUnserialized, function(&$value, $key) {
+              if(is_string($value) && !empty($value)) {
+                $value = array('#default_value' => $value);
+              }
+            });
+
+            $new_arra = array_replace_recursive($form['submitted'], $dataUnserialized);
+
+            $form['submitted'] = $new_arra;
+        }
     }
-
-    if (!empty($dataSerialized)) {
-      $dataUnserialized = unserialize($dataSerialized);
-      foreach ($dataUnserialized as $key => $value) {
-        $form['submitted'][$key]['#default_value'] = $value;
-      }
-    }
-  }
 }
 
 /**
