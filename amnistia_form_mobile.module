@@ -366,6 +366,7 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
     '#default_value' => isset($entity->data_serialized) ? $entity->data_serialized : '',
   );
 
+
   $form['status'] = array(
     '#type'    => 'select',
     '#title'   => t('Status'),
@@ -381,12 +382,35 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
   $form['actions']['submit'] = array(
     '#type'   => 'submit',
     '#value'  => t('Save'),
-    '#weight' => 999,
+    '#weight' => 5
   );
+
+  $form['actions']['delete'] = array(
+    '#type'   => 'submit',
+    '#attributes' => array('onclick' => 'if(!confirm("¿Realmente desea eliminar esta entrada?")){return false;}'),
+    '#submit' => array('amnistia_form_mobile_entity_form_delete'),
+    '#value'  => t('Delete'),
+    '#weight' => 10
+  );
+  $form;
 
   field_attach_form('amnistia_form_mobile_entity', $entity, $form, $form_state);
 
   return $form;
+}
+
+/**
+ * Form submission handler for deleting edit form.
+ */
+function amnistia_form_mobile_entity_form_delete($form, &$form_state)
+{
+    // Make use of Entity API class.
+    $entity = entity_ui_form_submit_build_entity($form, $form_state);
+
+    $entity->delete();
+
+    // Redirect to the management page.
+    $form_state['redirect'] = 'admin/amnistia-form-mobile-view';
 }
 
 /**
@@ -408,7 +432,7 @@ function amnistia_form_mobile_entity_form_submit($form, &$form_state) {
   $entity->save();
 
   // Redirect to the management page.
-  $form_state['redirect'] = 'admin/amnistia_form_mobile_entity';
+  $form_state['redirect'] = 'admin/amnistia-form-mobile-view';
 }
 
 /**
@@ -660,30 +684,38 @@ function amnistia_form_mobile_views_default_views() {
 /**
  * Implements hook_form_alter().
  */
-function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($_GET['token'])) {
-    $token = $_GET['token'];
+function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id)
+{
+    if (isset($_GET['token'])) {
+        $token = $_GET['token'];
 
-    $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE token = :token",
-      array(':token' => $token));
-    $record = $result->fetchAll();
+        $result = db_query("SELECT afme_id, email, token, form_id, data_serialized, status FROM {amnistia_form_mobile} WHERE token = :token",
+          array(':token' => $token));
+        $record = $result->fetchAll();
 
-    $dataSerialized = NULL;
-    $email = NULL;
+        $dataSerialized = null;
+        $email = null;
 
-    foreach ($record as $key => $value) {
-      if ($value->form_id == $form_id) {
-        $dataSerialized = $value->data_serialized;
-      }
+        foreach ($record as $key => $value) {
+            if ($value->form_id == $form_id) {
+                $dataSerialized = $value->data_serialized;
+            }
+        }
+
+        if (!empty($dataSerialized)) {
+            $dataUnserialized = unserialize($dataSerialized);
+
+            array_walk_recursive($dataUnserialized, function(&$value, $key) {
+              if(is_string($value) && !empty($value)) {
+                $value = array('#default_value' => $value);
+              }
+            });
+
+            $new_arra = array_replace_recursive($form['submitted'], $dataUnserialized);
+
+            $form['submitted'] = $new_arra;
+        }
     }
-
-    if (!empty($dataSerialized)) {
-      $dataUnserialized = unserialize($dataSerialized);
-      foreach ($dataUnserialized as $key => $value) {
-        $form['submitted'][$key]['#default_value'] = $value;
-      }
-    }
-  }
 }
 
 /**
