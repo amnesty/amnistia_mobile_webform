@@ -266,6 +266,7 @@ function _get_structure($email, $form_id) {
  */
 function _save_data($structure, $email, $form_id, $num_rows) {
   $serialized = serialize($structure);
+
   if (($num_rows == 0) && !empty($email)) {
     $record = db_insert('amnistia_form_mobile')
       ->fields(array(
@@ -360,11 +361,11 @@ function amnistia_form_mobile_entity_form($form, $form_state, $entity) {
     '#default_value' => isset($entity->form_id) ? $entity->form_id : '',
   );
 
-  $form['data_serialized'] = array(
+/*  $form['data_serialized'] = array(
     '#title'         => t('Data serialized'),
     '#type'          => 'textfield',
     '#default_value' => isset($entity->data_serialized) ? $entity->data_serialized : '',
-  );
+  );*/
 
 
   $form['status'] = array(
