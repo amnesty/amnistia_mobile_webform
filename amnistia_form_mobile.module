@@ -208,7 +208,7 @@ function _get_email_from_array_recursive($array) {
  */
 function _submit_form_mobile($form, &$form_state) {
 
-  $email = _get_email_from_array_recursive($array);
+  $email = _get_email_from_array_recursive($form);
   $form_id = $form_state['input']['form_id'];
 
   if ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count']) {
@@ -267,6 +267,14 @@ function _get_structure($email, $form_id) {
 function _save_data($structure, $email, $form_id, $num_rows) {
   $serialized = serialize($structure);
 
+
+  /*if (_email_malformed($email)) {
+    return false;
+  }*/
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    return;
+  }
+
   if (($num_rows == 0) && !empty($email)) {
     $record = db_insert('amnistia_form_mobile')
       ->fields(array(
@@ -298,6 +306,10 @@ function _save_data($structure, $email, $form_id, $num_rows) {
       ->execute();
 
   }
+}
+
+function _email_malformed($email){
+  return (bool) !preg_match("/[a-zA-Z0-9_-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+/", $email);
 }
 
 /**
