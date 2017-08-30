@@ -280,7 +280,29 @@
     margin: 0px 10px 0px 20px;
 }
 
+/* Pay Amount */
 
+.node-type-webform .content-form .amnistia_form_mobile .payamount-container{
+    width: 100%;
+    overflow: visible;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper{
+    cursor: pointer;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper .payamount-button{
+    display: inline-block;
+    height: 60px;
+    width: 32%;
+    margin-bottom: 10px;
+    
+    border: 1px solid;
+    border-radius: 5px;
+    background-color: #f1e60d;
+    
+    text-align: center;
+}
 
 /* Swipper */
 

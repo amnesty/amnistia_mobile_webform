@@ -28,4 +28,13 @@
       });
     }
   };
+
+
+  jQuery(document).ready(function () {
+    jQuery('.payamount-button').on('click', function() {
+      jQuery('#payamount-selected').val(this.value);
+    });
+  });
+
 })(jQuery)
+
