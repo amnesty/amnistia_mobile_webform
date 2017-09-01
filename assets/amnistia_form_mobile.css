@@ -291,10 +291,10 @@
     cursor: pointer;
 }
 
-.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper .payamount-button{
+.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper .payamount-input{
     display: inline-block;
     height: 60px;
-    width: 32%;
+    width: 100%;
     margin-bottom: 10px;
     
     border: 1px solid;
@@ -302,6 +302,19 @@
     background-color: #f1e60d;
     
     text-align: center;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper > .payamount-slide{
+    display: inline-block;
+    height: 60px;
+    width: 33%;
+    /*border: 1px solid;*/
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+.node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper .value-selected{
+    background-color: gray;
 }
 
 /* Swipper */
@@ -362,4 +375,74 @@
 
 .node-type-webform .content-form .amnistia_form_mobile .swiper-container + .webform-component-select{
     display: none;
+}
+
+/*----------------*/
+
+.amnistia_form_mobile label {
+    position: relative;
+    display: block;
+}
+.amnistia_form_mobile label input {
+    box-sizing: border-box;
+    display: block;
+    border: none;
+    padding: 20px;
+    width: 300px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    outline: none;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.amnistia_form_mobile label input::-webkit-input-placeholder {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    color: #999;
+}
+.amnistia_form_mobile form label input::-moz-placeholder {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    color: #999;
+}
+.amnistia_form_mobile  label input:-ms-input-placeholder {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    color: #999;
+}
+.amnistia_form_mobile label input::placeholder {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    color: #999;
+}
+.amnistia_form_mobile  label input:focus, form label input.populated {
+    padding-top: 28px;
+    padding-bottom: 12px;
+}
+.amnistia_form_mobile  label input:focus::-webkit-input-placeholder, .amnistia_form_mobile  label input.populated::-webkit-input-placeholder {
+    color: transparent;
+}
+.amnistia_form_mobile  label input:focus::-moz-placeholder, .amnistia_form_mobile  label input.populated::-moz-placeholder {
+    color: transparent;
+}
+.amnistia_form_mobile  label input:focus:-ms-input-placeholder, .amnistia_form_mobile  label input.populated:-ms-input-placeholder {
+    color: transparent;
+}
+.amnistia_form_mobile  label input:focus::placeholder, .amnistia_form_mobile  label input.populated::placeholder {
+    color: transparent;
+}
+.amnistia_form_mobile  label input:focus + span, .amnistia_form_mobile  label input.populated + span {
+    opacity: 1;
+    /* top: 10px;*/
+}
+.amnistia_form_mobile  label span {
+    color: #cccccc;
+    position: absolute;
+    top: 0px;
+    left: 20px;
+    font-size: 12px;
+    opacity: 0;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
