@@ -496,7 +496,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
       $link = l($link_text, $url);
       $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
     }
-
+    _change_tokens($webform, $entity);
     $params = array(
       'module' => 'amnistia_form_mobile',
       'key' => 'amnistia_form_mobile',
@@ -917,6 +917,7 @@ function amnistia_form_mobile_cron() {
           $link = l($link_text, $url);
           $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
         }
+        _change_tokens($webform, $entity_submission);
 
         // Change submission status: 0 (incomplete) -> 1 (remembered) (Automatically it sends email reminder).
         $entity_submission->status = 1;
@@ -924,4 +925,28 @@ function amnistia_form_mobile_cron() {
       }
     }
   }
+}
+
+function _change_tokens(&$webform, $entity){
+  $token = '';
+
+  preg_match('/\[FIELD:(.+?)\]/', $webform->field_email_reminder_content['und'][0]['value'], $matches);
+
+  $replaceText = '';
+
+  if (!empty($matches[1])) {
+    $data = $entity->data_serialized;
+    foreach($data as $key => $value) {
+      if($matches[1] == $key){
+        $replaceText = $value;
+      }
+    }
+  }
+
+  if (!empty($replaceText) && !empty($matches[0])) {
+    $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $replaceText, $webform->field_email_reminder_content['und'][0]['value']);
+  }
+
+
+
 }
