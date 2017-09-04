@@ -36,30 +36,21 @@
       sync_payamount_and_select(jQuery(this).attr('id'));
     });
 
-
     jQuery('.payamount-input').on('click', function () {
-
       $('#payamount-selected').val(this.id).trigger('change');
       $('#otherAmount').val('').removeClass('populated');
-
       $('.payamount-input').each(function () {
         $(this).removeClass('value-selected');
       });
-
       $(this).addClass('value-selected');
-
       sync_payamount_and_select(jQuery(this).parents('.payamount-container').attr('id'));
-
     });
 
     jQuery('#otherAmount').on('change', function () {
-
-      $('.payamount-button').each(function () {
-        $(this).css('background-color', '');
+      $('.payamount-input').each(function () {
+        $(this).removeClass('value-selected');
       });
-
       $('#payamount-selected').val(this.value).trigger('change');
-
       var input = $(this);
       if (input.val().length) {
         input.addClass('populated');
@@ -67,9 +58,7 @@
       else {
         input.removeClass('populated');
       }
-
-      sync_payamount_and_select(jQuery(this).parents('.payamount-container').attr('id'));
-
+      sync_payamount_and_select(jQuery('#payamount-selected').parents('.payamount-container').attr('id'));
     });
 
     jQuery('#payamount-selected').on('change', function () {
@@ -77,11 +66,8 @@
     });
 
     function sync_payamount_and_select(payamount_id) {
-      console.log(payamount_id);
       var payamount_value_selected = jQuery('#'+payamount_id+' .payamount-wrapper .payamount-slide .value-selected').attr('id');
-      console.log(payamount_value_selected);
       var select_id = payamount_id.replace('payamount-', '');
-      console.log(select_id);
       var $select = jQuery('#'+select_id);
       $select.val(payamount_value_selected).change();
     }

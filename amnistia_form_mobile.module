@@ -14,9 +14,9 @@ function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
 
   $node_wrapper = entity_metadata_wrapper('node', $node);
 
-  if (isset($node_wrapper->field_mobile_form)) {
+//  if (isset($node_wrapper->field_mobile_form)) {
     $is_form_mobile = $node_wrapper->field_mobile_form->value();
-  }
+//  }
 
   if ($node->type == 'webform' && $is_form_mobile && $view_mode == 'full') {
     // Adding a class in mobile forms.
@@ -31,7 +31,7 @@ function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
         'data'   => $file,
       );
     }
-    
+
 
     $file = drupal_get_path('module', 'amnistia_form_mobile') . '/assets/amnistia_form_mobile.js';
     if (is_file($file)) {
@@ -167,6 +167,11 @@ function amnistia_form_entity_callback() {
  */
 function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
 
+
+  if(!_is_form_mobile($form)){
+    return;
+  }
+
   if (isset($form_state['input']['submitted'])) {
     $structure = array();
     $allFields = $form_state['webform']['component_tree']['children'];
@@ -176,13 +181,18 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
 
     $email = _get_email_from_array_recursive($form_state);
     $getStructureAndRows = _get_structure($email, $form_id);
-    $structure = $getStructureAndRows["structure"];
-    $num_rows = $getStructureAndRows["num_rows"];
+    $structure = $getStructureAndRows['structure'];
+    $num_rows = $getStructureAndRows['num_rows'];
 
     _save_data($structure, $email, $form_id, $num_rows);
   }
 
   array_unshift($form['#submit'], '_submit_form_mobile');
+}
+
+function _is_form_mobile(&$form) {
+  $node_wrapper = entity_metadata_wrapper('node', $form['#node']);
+  return $node_wrapper->field_mobile_form->value();
 }
 
 /**
@@ -211,7 +221,10 @@ function _submit_form_mobile($form, &$form_state) {
   $email = _get_email_from_array_recursive($form);
   $form_id = $form_state['input']['form_id'];
 
-  if ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count']) {
+  $node_wrapper = entity_metadata_wrapper('node', $form['#node']);
+  $is_form_mobile = $node_wrapper->field_mobile_form->value();
+
+  if (_is_form_mobile($form) && ($form_state['input']['details']['page_num'] == $form_state['input']['details']['page_count'])) {
     $record = db_update('amnistia_form_mobile')
       ->fields(array(
         'status' => 2,
@@ -275,7 +288,8 @@ function _save_data($structure, $email, $form_id, $num_rows) {
     return;
   }
 
-  if (($num_rows == 0) && !empty($email)) {
+
+  if (($num_rows === 0) && !empty($email)) {
     $record = db_insert('amnistia_form_mobile')
       ->fields(array(
         'email',
@@ -293,7 +307,7 @@ function _save_data($structure, $email, $form_id, $num_rows) {
         'created' => REQUEST_TIME,
       )
     )->execute();
-  
+
   }
   else {
     $record = db_update('amnistia_form_mobile')
@@ -854,7 +868,7 @@ function amnistia_form_mobile_list_entities() {
  */
 function amnistia_form_mobile_load($item_id = NULL, $reset = FALSE) {
   $item_id = (isset($item_id) ? array($item_id) : array());
-  $item = amnistia_form_mobile_load_multiple($items_id, $reset);
+  $item = amnistia_form_mobile_load_multiple($item_id, $reset);
   return $item ? reset($item) : FALSE;
 }
 
