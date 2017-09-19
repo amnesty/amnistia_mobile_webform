@@ -178,7 +178,7 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
       $structure[$field['form_key']] = $field['value'];
     }
 
-    if($form_state['complete form']['submitted']['donativoamount']['#value']) {
+    if(isset($form_state['complete form']['submitted']['donativoamount']) && $form_state['complete form']['submitted']['donativoamount']['#value']) {
       $donationAmount = $form_state['complete form']['submitted']['donativoamount']['#value'];
       $_SESSION['amnistia_form_mobile_donationAmount'] = $donationAmount;
     } else {
@@ -767,24 +767,10 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Implements hook_mail_alter().
- */
-function amnistia_form_mobile_mail_alter(&$message) {
-  $headers = [
-    'MIME-Version' => '1.0',
-    'Content-Type' => 'text/html; charset = iso-8859-1; format = flowed',
-    'Content-Transfer-Encoding' => '8Bit',
-    'X-Mailer' => 'Drupal',
-  ];
-  foreach ($headers as $key => $value) {
-    $message['headers'][$key] = $value;
-  }
-}
-
-/**
  * Implements hook_mail().
  */
 function amnistia_form_mobile_mail($key, &$message, $params) {
+
   // Language selection.
   $options = [
     'langcode' => $message['language']->language,
@@ -799,6 +785,23 @@ function amnistia_form_mobile_mail($key, &$message, $params) {
       break;
   }
 }
+
+/**
+ * Implements hook_mail_alter().
+ */
+function amnistia_form_mobile_mail_alter(&$message) {
+  $headers = [
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/html; charset = iso-8859-1; format = flowed',
+    'Content-Transfer-Encoding' => '8Bit',
+    'X-Mailer' => 'Drupal',
+  ];
+  foreach ($headers as $key => $value) {
+    $message['headers'][$key] = $value;
+  }
+}
+
+
 
 /**
  * Wrapper function to invoke mail.
@@ -819,7 +822,8 @@ function amnistia_form_mobile_send(array $values = []) {
     $params['headers'] = $values['headers'];
   }
 
-  $mail = drupal_mail($module, $key, $to, $language, $params, $from, TRUE);
+  $send = TRUE;
+  $mail = drupal_mail($module, $key, $to, $language, $params, $from, $send);
   if ($mail['result']) {
     $msg = 'An email reminder was sent to: ' . $to;
     watchdog('amnistia_form_mobile', $msg, [], WATCHDOG_NOTICE);
@@ -951,22 +955,38 @@ function amnistia_form_mobile_cron() {
 function _change_tokens(&$webform, $entity) {
   $token = '';
 
-  preg_match('/\[FIELD:(.+?)\]/', $webform->field_email_reminder_content['und'][0]['value'], $matches);
+  preg_match_all('/\[FIELD:(.+?)\]/', $webform->field_email_reminder_content['und'][0]['value'], $matches, PREG_PATTERN_ORDER);
 
-  $replaceText = '';
+  $replaceText = [];
+  $data = $entity->data_serialized;
 
-  if (!empty($matches[1])) {
-    $data = $entity->data_serialized;
-    foreach ($data as $key => $value) {
-      if ($matches[1] == $key) {
-        $replaceText = $value;
+
+  foreach($matches[1] as $key => $field) {
+    //if(isset($data[$field])) {
+      $replaceText[$key] = _findKey($data, $field);
+    //}
+  }
+  foreach($matches[0] as $key => $changeText){
+    $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0][$key], $replaceText[$key], $webform->field_email_reminder_content['und'][0]['value']);
+  }
+//  if (!empty($replaceText) && !empty($matches[0])) {
+//    $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $replaceText, $webform->field_email_reminder_content['und'][0]['value']);
+//  }
+}
+
+function _findKey($array, $keySearch) {
+
+  foreach ($array as $key => $item) {
+    if ($key === $keySearch) {
+      return $item;
+    }
+    else {
+      if (is_array($item)) {
+        return _findKey($item, $keySearch);
       }
     }
   }
 
-  if (!empty($replaceText) && !empty($matches[0])) {
-    $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $replaceText, $webform->field_email_reminder_content['und'][0]['value']);
-  }
-
+  return false;
 
 }
