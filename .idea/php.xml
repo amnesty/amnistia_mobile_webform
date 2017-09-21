@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/../../../../../includes" />
+      <path value="$PROJECT_DIR$/../../../../../modules" />
+      <path value="$PROJECT_DIR$/../../cpn" />
+      <path value="$PROJECT_DIR$/../../ldap" />
+      <path value="$PROJECT_DIR$/../../link" />
+      <path value="$PROJECT_DIR$/../../smtp" />
+      <path value="$PROJECT_DIR$/../../devel" />
+      <path value="$PROJECT_DIR$/../../ixiam" />
+      <path value="$PROJECT_DIR$/../../token" />
+      <path value="$PROJECT_DIR$/../../views" />
+      <path value="$PROJECT_DIR$/../../ctools" />
+      <path value="$PROJECT_DIR$/../../entity" />
+      <path value="$PROJECT_DIR$/../../civicrm" />
+      <path value="$PROJECT_DIR$/../link" />
+      <path value="$PROJECT_DIR$/../mimemail" />
+      <path value="$PROJECT_DIR$/../mailsystem" />
+      <path value="$PROJECT_DIR$/../amnistia_selection_button" />
+      <path value="$PROJECT_DIR$/../../maillog" />
+      <path value="$PROJECT_DIR$/../../webform" />
+      <path value="$PROJECT_DIR$/../../addtoany" />
+      <path value="$PROJECT_DIR$/../../ckeditor" />
+      <path value="$PROJECT_DIR$/../../mimemail" />
+      <path value="$PROJECT_DIR$/../../themekey" />
+      <path value="$PROJECT_DIR$/../../libraries" />
+      <path value="$PROJECT_DIR$/../../role_hide" />
+      <path value="$PROJECT_DIR$/../../mailsystem" />
+      <path value="$PROJECT_DIR$/../../node_clone" />
+      <path value="$PROJECT_DIR$/../../hide_submit" />
+      <path value="$PROJECT_DIR$/../../l10n_update" />
+      <path value="$PROJECT_DIR$/../../web_widgets" />
+      <path value="$PROJECT_DIR$/../../terms_of_use" />
+      <path value="$PROJECT_DIR$/../../token_custom" />
+      <path value="$PROJECT_DIR$/../../token_filter" />
+      <path value="$PROJECT_DIR$/../../token_insert" />
+      <path value="$PROJECT_DIR$/../../content_theme" />
+      <path value="$PROJECT_DIR$/../../webform_share" />
+      <path value="$PROJECT_DIR$/../../webform_layout" />
+      <path value="$PROJECT_DIR$/../../webform_styles" />
+      <path value="$PROJECT_DIR$/../../better_messages" />
+      <path value="$PROJECT_DIR$/../../fapi_validation" />
+      <path value="$PROJECT_DIR$/../../options_element" />
+      <path value="$PROJECT_DIR$/../../webform_civicrm" />
+      <path value="$PROJECT_DIR$/../../webform_classes" />
+      <path value="$PROJECT_DIR$/../../field_validation" />
+      <path value="$PROJECT_DIR$/../../absolute_messages" />
+      <path value="$PROJECT_DIR$/../../webform_validation" />
+      <path value="$PROJECT_DIR$/../../webform_conditional" />
+      <path value="$PROJECT_DIR$/../../drupal-age-validator" />
+      <path value="$PROJECT_DIR$/../../webform_autocomplete" />
+      <path value="$PROJECT_DIR$/../../clientside_validation" />
+      <path value="$PROJECT_DIR$/../../drupal-iban-validator" />
+      <path value="$PROJECT_DIR$/../../page_manager_redirect" />
+      <path value="$PROJECT_DIR$/../../webform_optionsmarkup" />
+      <path value="$PROJECT_DIR$/../../drupal-membership-validator" />
+      <path value="$PROJECT_DIR$/../../drupal-nif-nie-cif-validator" />
+      <path value="$PROJECT_DIR$/../../drupal-minimumvalue-validator" />
+      <path value="$PROJECT_DIR$/../../drupal-nif-nie-cif-validator-master" />
+    </include_path>
+  </component>
+</project>
