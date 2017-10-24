@@ -227,12 +227,12 @@ function _change_copyanimo(&$form, $donationAmount, $form_key) {
 
 function _is_form_mobile($node_wrapper) {
   //$node_wrapper = entity_metadata_wrapper('node', $form['#node']);
-
-  if ($node_wrapper->field_mobile_form) {
-    return $node_wrapper->field_mobile_form->value();
+  if(!isset($node_wrapper->field_mobile_form)){
+    return false;
   }
 
-  return false;
+  return $node_wrapper->field_mobile_form->value();
+
 }
 
 /**
