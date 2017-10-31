@@ -20,11 +20,6 @@
  * - $percent: The percentage complete.
  */
 ?>
-
-<style>
-
-</style>
-
 <div class="webform-progressbar">
     <?php if ($progressbar_bar): ?>
     <ul>
