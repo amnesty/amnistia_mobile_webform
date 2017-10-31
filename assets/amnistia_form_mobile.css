@@ -169,8 +169,8 @@
 .node-type-webform .content-form .amnistia_form_mobile input[type="radio"] {
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 28px;
-    height: 28px;
+    width: 15px;
+    height: 15px;
     border: 1px solid #000;
     border-radius: 4px;
     margin-top: 0;
@@ -188,8 +188,8 @@
     background: url(./images/ico-check.png) center no-repeat #f1e60d;
     content: "";
     font-size: 24px;
-    height: 26px;
-    width: 26px;
+    height: 13px;
+    width: 13px;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -210,6 +210,7 @@
 
 .node-type-webform .content-form .amnistia_form_mobile .form-type-radio label{
     vertical-align: bottom;
+    font-size: 12px;
 }
 
 
@@ -271,7 +272,7 @@
 
 .node-type-webform .content-form .amnistia_form_mobile .webform-previous.cancel.form-submit {
     border: none;
-    font-size: 22px;
+    font-size: 15px;
     max-width: 100%;
     text-transform: none;
     text-align: left;
@@ -437,3 +438,65 @@
     display: none;
 }
 
+.webform-progressbar {
+    font-family: TradeGothicLT-BoldCondTwenty, HelveticaNeue-CondensedBold, "Franklin Gothic Medium", sans-serif;
+    margin:0 20px 0 20px;
+}
+
+.webform-progressbar ul {
+    list-style-type:none;
+    max-width: calc(60% + 320px);
+    margin: 20px auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 0;
+    border: none;
+}
+/*Create a horizontal list with spacing*/
+.webform-progressbar li {
+    display:inline-block;
+    float: left;
+    max-width: 33%;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    font-size: 1.5em;
+    color: #778899;
+    background: url(images/next.png) no-repeat center;
+    width:25px;
+}
+
+.webform-progressbar li.current {
+    background: url(images/current.png) no-repeat center;
+    font-weight: bold;
+    color: #000000;
+
+}
+
+.webform-progressbar li.previous {
+    background: url(images/previous.png) no-repeat center;
+    font-weight: bold;
+    color: #000000;
+}
+
+.webform-progressbar li.line {
+    width:100%;
+    background: url(images/linegray.png) no-repeat center;
+}
+
+.webform-progressbar ul.list-progressbar {
+    margin: 20px -20px;
+}
+
+.webform-progressbar li.labels-progressbar {
+    background:none;
+    width:100%;
+    margin-top: -15px;
+    font-size: 1.5em;
+    line-height: 15px;
+}
+
+.webform-progressbar li.labels-empty {
+    background: none;
+    width:100%;
+}
