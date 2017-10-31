@@ -299,6 +299,7 @@
 
 .node-type-webform .content-form .amnistia_form_mobile .form-actions{
     display:grid;
+    clear:both;
 }
 
 /* Pay Amount */
