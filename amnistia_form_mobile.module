@@ -172,6 +172,7 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
     return;
   }
 
+
   if (isset($form_state['input']['submitted'])) {
     $structure = [];
     $allFields = $form_state['webform']['component_tree']['children'];
@@ -196,12 +197,13 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
     }
 
     $email = _get_email_from_array_recursive($form_state);
-    $getStructureAndRows = _get_structure($email, $form_id);
+    $getStructureAndRows =  _get_structure($email, $form_id);
     $structure = $getStructureAndRows['structure'];
     $num_rows = $getStructureAndRows['num_rows'];
 
     _save_data($structure, $email, $form_id, $num_rows);
   }
+
 
   array_unshift($form['#submit'], '_submit_form_mobile');
 }
