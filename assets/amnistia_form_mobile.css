@@ -277,7 +277,7 @@
     max-width: 100%;
     text-transform: none;
     text-align: left;
-    order:2;
+    order:5;
 }
 
 .node-type-webform .content-form .amnistia_form_mobile .form-managed-file input[type="submit"]{
@@ -466,7 +466,7 @@
     font-size: 1.5em;
     color: #778899;
     background: url(images/next.png) no-repeat center;
-    width: 100%;
+    width: 100%F;
 }
 
 .webform-progressbar li.current {
