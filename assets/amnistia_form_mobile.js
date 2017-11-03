@@ -1,7 +1,7 @@
 (function ($) {
   Drupal.behaviors.myajax = {
     attach: function(context,settings){
- 
+
       $('[id*="edit-submitted"]', context).once('myajax').focusout(function(event) {
 
         if(sessionStorage.getItem('amnistiaform_mobile') === null) {
@@ -9,7 +9,7 @@
         }
 
         if(sessionStorage.getItem('amnistiaform_mobile') !== $('.amnistia_form_mobile').serialize()) {
-          
+
           sessionStorage.setItem('amnistiaform_mobile', $('.amnistia_form_mobile').serialize());
           $.ajax({
             type: "POST",
@@ -75,6 +75,9 @@
       sync_payamount_and_select(jQuery('.value-selected').parents('.payamount-container').attr('id'));
     });
 */
+
+    $('.provincia option[value=""]').text("-Provincia-");
+
     function sync_payamount_and_select(payamount_id) {
       var payamount_value_selected = jQuery('#'+payamount_id+' .payamount-wrapper .payamount-slide .value-selected').attr('id');
       var select_id = payamount_id.replace('payamount-', '');
