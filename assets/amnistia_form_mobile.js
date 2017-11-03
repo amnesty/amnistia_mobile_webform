@@ -77,6 +77,7 @@
 */
 
     $('.provincia option[value=""]').text("-Provincia-");
+    $('.tipo_documento option[value=""]').text("- Tipo Documento-");
 
     function sync_payamount_and_select(payamount_id) {
       var payamount_value_selected = jQuery('#'+payamount_id+' .payamount-wrapper .payamount-slide .value-selected').attr('id');
