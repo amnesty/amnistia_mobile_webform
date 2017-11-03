@@ -85,5 +85,9 @@
       $select.val(payamount_value_selected).change();
     }
 
+
+    $('.disclaimer').appendTo('#disclaimer');
+    $('.disclaimer-bottom').appendTo('.form-actions');
   });
 })(jQuery)
+
