@@ -466,7 +466,7 @@
     font-size: 1.5em;
     color: #778899;
     background: url(images/next.png) no-repeat center;
-    width: 100%F;
+    width: 100%;
 }
 
 .webform-progressbar li.current {
@@ -488,7 +488,7 @@
 }
 
 .webform-progressbar ul.list-progressbar {
-    margin: 20px -20px;
+    margin: 20px auto -20px auto;
 }
 
 .webform-progressbar li.labels-progressbar {
