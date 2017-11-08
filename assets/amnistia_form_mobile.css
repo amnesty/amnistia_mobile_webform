@@ -503,3 +503,8 @@
     background: none;
     width:100%;
 }
+
+.img-centred {
+    margin:auto;
+    order:2;
+}
