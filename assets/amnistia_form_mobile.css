@@ -506,5 +506,7 @@
 
 .img-centred {
     margin:auto;
+    margin-top: 15px;
     order:2;
+
 }
