@@ -773,6 +773,7 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
       $new_arra = array_replace_recursive($form['submitted'], $dataUnserialized);
 
       $form['submitted'] = $new_arra;
+
     }
   }
 }
