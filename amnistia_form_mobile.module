@@ -187,6 +187,10 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
       $structure[$field['form_key']] = $field['value'];
     }
 
+    if(isset($form_state['complete form']['submitted']['otra_cantidad']) && $form_state['complete form']['submitted']['otra_cantidad']['#value']) {
+      $form_state['complete form']['submitted']['donativoamount']['#value'] = $form_state['complete form']['submitted']['otra_cantidad']['#value'] ;
+    }
+
     if (isset($form_state['complete form']['submitted']['donativoamount']) && $form_state['complete form']['submitted']['donativoamount']['#value']) {
       $donationAmount = $form_state['complete form']['submitted']['donativoamount']['#value'];
       $_SESSION['amnistia_form_mobile_donationAmount'] = $donationAmount;
@@ -196,9 +200,8 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
     }
 
     foreach ($form['submitted'] as $component) {
-      if (preg_match('/copyanimo/', strtolower($component['#webform_component']['form_key'])) == TRUE) {
+      if (preg_match('/copyanimo/', strtolower($component['#webform_component']['form_key'])) === 1) {
         _change_copyanimo($form, $donationAmount, $component['#webform_component']['form_key']);
-
       }
     }
 
