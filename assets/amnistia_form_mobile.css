@@ -123,6 +123,7 @@
 }
 
 .node-type-webform .content-form .amnistia_form_mobile input[type="text"],
+.node-type-webform .content-form .amnistia_form_mobile input[type="number"],
 .node-type-webform .content-form .amnistia_form_mobile input[type="email"],
 .node-type-webform .content-form .amnistia_form_mobile input[type="password"],
 .node-type-webform .content-form .amnistia_form_mobile select {
@@ -318,11 +319,11 @@
     height: 80px;
     width: 100%;
     margin-bottom: 10px;
-    
+
     border: 2px solid #CCCCCC;
     border-radius: 1px;
     background-color: #eeeeee;
-    
+
     text-align: center;
 }
 
@@ -473,7 +474,6 @@
     background: url(images/current.png) no-repeat center;
     font-weight: bold;
     color: #000000;
-
 }
 
 .webform-progressbar li.previous {
