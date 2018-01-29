@@ -442,12 +442,12 @@
     display: none;
 }
 
-.webform-progressbar {
+.webform-progressbar.mobile {
     font-family: TradeGothicLT-BoldCondTwenty, HelveticaNeue-CondensedBold, "Franklin Gothic Medium", sans-serif;
     margin:0 20px 0 20px;
 }
 
-.webform-progressbar ul {
+.webform-progressbar.mobile ul {
     list-style-type:none;
     max-width: calc(60% + 320px);
     margin: 20px auto 0 auto;
@@ -457,7 +457,7 @@
     border: none;
 }
 /*Create a horizontal list with spacing*/
-.webform-progressbar li {
+.webform-progressbar.mobile li {
     display:inline-block;
     float: left;
     max-width: 33%;
@@ -470,28 +470,28 @@
     width: 100%;
 }
 
-.webform-progressbar li.current {
+.webform-progressbar.mobile li.current {
     background: url(images/current.png) no-repeat center;
     font-weight: bold;
     color: #000000;
 }
 
-.webform-progressbar li.previous {
+.webform-progressbar.mobile li.previous {
     background: url(images/previous.png) no-repeat center;
     font-weight: bold;
     color: #000000;
 }
 
-.webform-progressbar li.line {
+.webform-progressbar.mobile li.line {
     width:100%;
     background: url(images/linegray.png) no-repeat center;
 }
 
-.webform-progressbar ul.list-progressbar {
+.webform-progressbar.mobile ul.list-progressbar {
     margin: 20px auto -20px auto;
 }
 
-.webform-progressbar li.labels-progressbar {
+.webform-progressbar.mobile li.labels-progressbar {
     background:none;
     width:100%;
     margin-top: -15px;
@@ -499,7 +499,7 @@
     line-height: 15px;
 }
 
-.webform-progressbar li.labels-empty {
+.webform-progressbar.mobile li.labels-empty {
     background: none;
     width:100%;
 }

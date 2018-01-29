@@ -12,10 +12,16 @@
  */
 function amnistia_form_mobile_node_view($node, $view_mode, $langcode) {
 
+
   $node_wrapper = entity_metadata_wrapper('node', $node);
 
   if(!_is_form_mobile($node_wrapper)){
     return;
+  }
+
+  if(!empty($_SESSION['cid'])) {
+    $form_state= $_SESSION['cid'];
+    unset($_SESSION['cid']);
   }
 
   if ($node->type == 'webform' && $view_mode == 'full') {
@@ -181,6 +187,10 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
       $structure[$field['form_key']] = $field['value'];
     }
 
+    if(isset($form_state['complete form']['submitted']['otra_cantidad']) && $form_state['complete form']['submitted']['otra_cantidad']['#value']) {
+      $form_state['complete form']['submitted']['donativoamount']['#value'] = $form_state['complete form']['submitted']['otra_cantidad']['#value'] ;
+    }
+
     if (isset($form_state['complete form']['submitted']['donativoamount']) && $form_state['complete form']['submitted']['donativoamount']['#value']) {
       $donationAmount = $form_state['complete form']['submitted']['donativoamount']['#value'];
       $_SESSION['amnistia_form_mobile_donationAmount'] = $donationAmount;
@@ -190,9 +200,8 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
     }
 
     foreach ($form['submitted'] as $component) {
-      if (preg_match('/copyanimo/', strtolower($component['#webform_component']['form_key'])) == TRUE) {
+      if (preg_match('/copyanimo/', strtolower($component['#webform_component']['form_key'])) === 1) {
         _change_copyanimo($form, $donationAmount, $component['#webform_component']['form_key']);
-
       }
     }
 
@@ -203,7 +212,6 @@ function amnistia_form_mobile_form_webform_client_form_alter(&$form, &$form_stat
 
     _save_data($structure, $email, $form_id, $num_rows);
   }
-
 
   array_unshift($form['#submit'], '_submit_form_mobile');
 }
@@ -276,7 +284,9 @@ function _submit_form_mobile($form, &$form_state) {
       ->condition('email', $email)
       ->condition('form_id', $form_id)
       ->execute();
+
   }
+
 
 }
 
@@ -773,6 +783,7 @@ function amnistia_form_mobile_form_alter(&$form, &$form_state, $form_id) {
       $new_arra = array_replace_recursive($form['submitted'], $dataUnserialized);
 
       $form['submitted'] = $new_arra;
+
     }
   }
 }
@@ -990,18 +1001,24 @@ function _findKey($array, $keySearch) {
 }
 
 function amnistia_form_mobile_theme_registry_alter(&$theme_registry) {
-  // Defined path to the current module.
-  $module_path = drupal_get_path('module', 'amnistia_form_mobile');
-  // Find all .tpl.php files in this module's folder recursively.
-  $template_file_objects = drupal_find_theme_templates($theme_registry, '.tpl.php', $module_path);
-  // Iterate through all found template file objects.
-  foreach ($template_file_objects as $key => $template_file_object) {
-    // If the template has not already been overridden by a theme.
-    if (!isset($theme_registry[$key]['theme path']) || !preg_match('#/themes/#', $theme_registry[$key]['theme path'])) {
-      // Alter the theme path and template elements.
-      $theme_registry[$key]['theme path'] = $module_path;
-      $theme_registry[$key] = array_merge($theme_registry[$key], $template_file_object);
-      $theme_registry[$key]['type'] = 'module';
+
+
+
+    // Defined path to the current module.
+    $module_path = drupal_get_path('module', 'amnistia_form_mobile');
+    // Find all .tpl.php files in this module's folder recursively.
+    $template_file_objects = drupal_find_theme_templates($theme_registry, '.tpl.php', $module_path);
+
+    // Iterate through all found template file objects.
+    foreach ($template_file_objects as $key => $template_file_object) {
+
+      // If the template has not already been overridden by a theme.
+      if (!isset($theme_registry[$key]['theme path']) || !preg_match('#/themes/#', $theme_registry[$key]['theme path'])) {
+        // Alter the theme path and template elements.
+        $theme_registry[$key]['theme path'] = $module_path;
+        $theme_registry[$key] = array_merge($theme_registry[$key], $template_file_object);
+        $theme_registry[$key]['type'] = 'module';
+      }
     }
-  }
+
 }
