@@ -330,12 +330,11 @@
 .node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper > .payamount-slide{
     float:left;
     height: 60px;
-    width: 30%;
-    margin:5px;
+    width: 24%;
+    margin:0px -1px 33px 4px;
     font-size: 20px;
     font-weight:lighter;
     color: #aaaaaa;
-    margin-bottom: 10%;
 }
 
 .node-type-webform .content-form .amnistia_form_mobile .payamount-wrapper .value-selected{
