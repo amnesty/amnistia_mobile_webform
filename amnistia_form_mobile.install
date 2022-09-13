@@ -97,7 +97,7 @@ function amnistia_form_mobile_install() {
     array(
       'name' => 'field_mobile_form',
       'type' => 'list_boolean',
-      'label' => 'Mobile form',
+      'label' => 'Reminder form',
       'description' => 'Check if the form should be displayed with the mobile settings',
       'settings' => array(
         'allowed_values' => array(0, 1),

@@ -18,7 +18,7 @@
             url: Drupal.settings.basePath + 'custom/ajaxwork',
             data: $('.amnistia_form_mobile').serialize(), // you can also pass block name and act more dynamicly
             success: function (data){
-              Drupal.attachBehaviors(document);
+              //Drupal.attachBehaviors(document);
             },
             error: function(data){
               // console.log(data);
