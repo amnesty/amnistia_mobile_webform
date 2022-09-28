@@ -535,7 +535,7 @@ function amnistia_form_mobile_entity_update($entity, $type) {
     }
     if (!empty($link_text)) {
       $options = ['absolute' => TRUE];
-      $url = url('node/' . $webform->nid, $options) . '?token=' . $entity->token;
+      $url = url('node/' . $webform->nid, $options) . '?token=' . $entity->token.'?utm_source=email&utm_medium=email&utm_campaign=mailint_capt_recordform';
       $link = l($link_text, $url);
       $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
     }
@@ -959,7 +959,7 @@ function amnistia_form_mobile_cron() {
         }
         if (!empty($link_text)) {
           $options = ['absolute' => TRUE];
-          $url = url('node/' . $webform->nid, $options) . '?token=' . $entity_submission->token;
+          $url = url('node/' . $webform->nid, $options) . '?token=' . $entity_submission->token.'?utm_source=email&utm_medium=email&utm_campaign=mailint_capt_recordform';
           $link = l($link_text, $url);
           $webform->field_email_reminder_content['und'][0]['value'] = str_replace($matches[0], $link, $webform->field_email_reminder_content['und'][0]['value']);
         }
