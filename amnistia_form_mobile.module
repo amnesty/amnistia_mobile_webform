@@ -58,7 +58,7 @@ function amnistia_form_mobile_entity_info() {
 
   $return['amnistia_form_mobile_entity'] = [
     // Define basic information.
-    'label' => t('Mobile form'),
+    'label' => t('Reminder form'),
     'fieldable' => TRUE,
 
     // Provide information about the database table.
